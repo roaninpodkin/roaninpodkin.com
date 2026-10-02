@@ -24,6 +24,21 @@ npm run dev        # http://localhost:4321
 
 Every push to `main` runs lint, type-check, and build, then deploys to GitHub Pages (`.github/workflows/deploy.yml`). Pull requests run the same checks without deploying.
 
+## Under construction mode
+
+While the site is being built, the public domain serves the static page in `construction/` instead of the Astro build. This is controlled by the repo variable `SITE_MODE`:
+
+```sh
+gh variable set SITE_MODE --body live          # publish the real site
+gh variable set SITE_MODE --body construction  # back to the "being built" page
+```
+
+Then re-run the deploy (`gh workflow run deploy.yml`) or push to `main`. In construction mode, each deploy still builds the real site and attaches it as a `site-preview` artifact on the workflow run. Preview locally with `npm run dev`, or open a Codespace.
+
+## Old site
+
+`old-site/` holds the archived WordPress site (content, HTML, images) and the DNS records needed to point the domain back at it. See `old-site/README.md`.
+
 ## SEO
 
 - Site metadata lives in `src/consts.ts`; per-page title/description via `BaseLayout` props.

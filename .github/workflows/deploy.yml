@@ -27,9 +27,19 @@ jobs:
       - run: npm run lint
       - run: npm run check
       - run: npm run build
+      # Repo variable SITE_MODE controls what goes public:
+      #   live         -> the Astro build in dist/
+      #   anything else (default) -> the "site being built" page in construction/
       - uses: actions/upload-pages-artifact@v5
         with:
+          path: ${{ vars.SITE_MODE == 'live' && 'dist' || 'construction' }}
+      # Always keep the real build as a downloadable artifact for review.
+      - uses: actions/upload-artifact@v7
+        if: vars.SITE_MODE != 'live'
+        with:
+          name: site-preview
           path: dist
+          retention-days: 14
 
   deploy:
     needs: build

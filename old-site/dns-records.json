@@ -1,0 +1,14 @@
+{
+  "zone": "roaninpodkin.com",
+  "zone_id": "c3caf7fbe4a4986f9279b2377a2f9e0f",
+  "name_servers": ["devin.ns.cloudflare.com", "harlee.ns.cloudflare.com"],
+  "captured": "2026-10-01",
+  "note": "DNS as it was while the site was the WordPress install. ttl 1 = Cloudflare 'Auto'.",
+  "records": [
+    { "type": "A", "name": "roaninpodkin.com", "content": "34.199.192.119", "proxied": true, "ttl": 1 },
+    { "type": "CNAME", "name": "www.roaninpodkin.com", "content": "roaninpodkin.com", "proxied": true, "ttl": 1 },
+    { "type": "TXT", "name": "_amazonses.roaninpodkin.com", "content": "\"Uwi09DIWsAVQWQ69B4c58xmtp3gCBKK6dNP3drPF+HQ=\"", "proxied": false, "ttl": 1 },
+    { "type": "TXT", "name": "_dmarc.roaninpodkin.com", "content": "\"v=DMARC1; p=none; rua=mailto:postmaster@roaninpodkin.com\"", "proxied": false, "ttl": 1 },
+    { "type": "TXT", "name": "roaninpodkin.com", "content": "\"v=spf1 include:amazonses.com ~all\"", "proxied": false, "ttl": 1 }
+  ]
+}
