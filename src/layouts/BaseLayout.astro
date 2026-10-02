@@ -1,0 +1,52 @@
+---
+import SEO from '../components/SEO.astro';
+import type { Props as SEOProps } from '../components/SEO.astro';
+import { SITE } from '../consts';
+import '../styles/global.css';
+
+type Props = SEOProps;
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <SEO {...Astro.props} />
+  </head>
+  <body class="flex min-h-dvh flex-col bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:p-2">
+      Skip to content
+    </a>
+    <header class="mx-auto w-full max-w-3xl px-6 py-8">
+      <nav aria-label="Main" class="flex items-center justify-between">
+        <a href="/" class="font-semibold tracking-tight">
+          {SITE.name}
+        </a>
+      </nav>
+    </header>
+    <main id="main" class="mx-auto w-full max-w-3xl flex-1 px-6">
+      <slot />
+    </main>
+    <footer class="mx-auto w-full max-w-3xl px-6 py-10 text-sm text-neutral-500">
+      <div class="flex flex-wrap items-center justify-between gap-4">
+        <p>
+          &copy; {year} {SITE.name}
+        </p>
+        <ul class="flex gap-4">
+          {SITE.socials.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                rel="me noopener"
+                target="_blank"
+                class="hover:text-neutral-900 dark:hover:text-neutral-100"
+              >
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </footer>
+  </body>
+</html>
