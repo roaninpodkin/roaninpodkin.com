@@ -7,5 +7,5 @@ export const SITE = {
   lang: 'en',
   ogImage: '/og-default.png',
   // Profile URLs used for schema.org `sameAs` and the footer.
-  socials: [{ label: 'GitHub', href: 'https://github.com/roaninpodkin1' }],
+  socials: [{ label: 'GitHub', href: 'https://github.com/roaninpodkin' }],
 } as const;
