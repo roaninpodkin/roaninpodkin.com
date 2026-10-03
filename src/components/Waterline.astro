@@ -1,0 +1,34 @@
+---
+/**
+ * A seamless, slowly drifting wave edge. Place inside a `relative` section;
+ * it overlaps the section above by its own height.
+ */
+interface Props {
+  fill?: string;
+  class?: string;
+}
+const { fill = 'var(--color-sea-100)', class: cls = '' } = Astro.props;
+// Period is 1440 units; the path is two periods so it can loop by -50%.
+const d =
+  'M0 60 C360 10 360 110 720 60 C1080 10 1080 110 1440 60 C1800 10 1800 110 2160 60 C2520 10 2520 110 2880 60 L2880 121 L0 121 Z';
+---
+
+<div
+  class={`pointer-events-none absolute inset-x-0 top-0 h-14 -translate-y-[98%] overflow-hidden md:h-24 ${cls}`}
+  aria-hidden="true"
+>
+  <svg
+    class="wave absolute bottom-0 left-0 h-full w-[200%] [animation:drift_26s_linear_infinite_reverse]"
+    viewBox="0 0 2880 120"
+    preserveAspectRatio="none"
+  >
+    <path d={d} fill={fill} opacity="0.45"></path>
+  </svg>
+  <svg
+    class="wave absolute bottom-0 left-0 h-full w-[200%] [animation:drift_17s_linear_infinite]"
+    viewBox="0 0 2880 120"
+    preserveAspectRatio="none"
+  >
+    <path d={d} fill={fill}></path>
+  </svg>
+</div>

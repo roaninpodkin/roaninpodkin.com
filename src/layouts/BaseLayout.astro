@@ -1,52 +1,64 @@
 ---
 import SEO from '../components/SEO.astro';
 import type { Props as SEOProps } from '../components/SEO.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
 import { SITE } from '../consts';
 import '../styles/global.css';
 
-type Props = SEOProps;
-const year = new Date().getFullYear();
+interface Props extends SEOProps {
+  /** Header tone. 'light' = dark text (light page), 'dark' = light text (water page). */
+  tone?: 'light' | 'dark';
+  current?: string;
+  bodyClass?: string;
+  /** The home page renders its own header and footer. */
+  chrome?: boolean;
+}
+const { tone = 'dark', current = '', bodyClass = '', chrome = true, ...seo } = Astro.props;
 ---
 
 <!doctype html>
-<html lang={SITE.lang}>
+<html lang={SITE.lang} class="no-js">
   <head>
-    <SEO {...Astro.props} />
+    <SEO {...seo} />
+    <script is:inline>
+      document.documentElement.classList.remove('no-js');
+    </script>
   </head>
-  <body class="flex min-h-dvh flex-col bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100">
-    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:p-2">
+  <body class={`flex min-h-dvh flex-col ${bodyClass}`}>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-ink focus:px-4 focus:py-2 focus:text-foam"
+    >
       Skip to content
     </a>
-    <header class="mx-auto w-full max-w-3xl px-6 py-8">
-      <nav aria-label="Main" class="flex items-center justify-between">
-        <a href="/" class="font-semibold tracking-tight">
-          {SITE.name}
-        </a>
-      </nav>
-    </header>
-    <main id="main" class="mx-auto w-full max-w-3xl flex-1 px-6">
+    {chrome && <Header tone={tone} current={current} />}
+    <main id="main" class="flex-1">
       <slot />
     </main>
-    <footer class="mx-auto w-full max-w-3xl px-6 py-10 text-sm text-neutral-500">
-      <div class="flex flex-wrap items-center justify-between gap-4">
-        <p>
-          &copy; {year} {SITE.name}
-        </p>
-        <ul class="flex gap-4">
-          {SITE.socials.map((s) => (
-            <li>
-              <a
-                href={s.href}
-                rel="me noopener"
-                target="_blank"
-                class="hover:text-neutral-900 dark:hover:text-neutral-100"
-              >
-                {s.label}
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </footer>
+    {chrome && <Footer />}
+    <script>
+      // Scroll reveal
+      const els = document.querySelectorAll<HTMLElement>('.reveal');
+      if (
+        !('IntersectionObserver' in window) ||
+        matchMedia('(prefers-reduced-motion: reduce)').matches
+      ) {
+        els.forEach((el) => el.classList.add('is-in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.isIntersecting) {
+                (e.target as HTMLElement).classList.add('is-in');
+                io.unobserve(e.target);
+              }
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 },
+        );
+        els.forEach((el) => io.observe(el));
+      }
+    </script>
   </body>
 </html>

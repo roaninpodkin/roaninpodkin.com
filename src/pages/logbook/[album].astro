@@ -1,0 +1,207 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { SITE } from '../../consts';
+import { href } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const albums = await getCollection('logbook');
+  return albums.map((album) => ({ params: { album: album.id.split('/')[0] }, props: { album } }));
+}
+
+const { album } = Astro.props;
+const { title, place, date, caption, photos } = album.data;
+const meta = [place, date].filter(Boolean).join(' · ');
+
+// Full-size versions for the lightbox.
+const items = await Promise.all(
+  photos.map(async (p) => {
+    if (p.kind !== 'image') return { ...p, full: p.src };
+    const full = await getImage({ src: p.src, width: 1800, format: 'jpeg', quality: 85 });
+    return { ...p, full: full.src };
+  }),
+);
+const cover = photos.find((p) => p.kind === 'image');
+const ogImage =
+  cover && cover.kind === 'image'
+    ? (await getImage({ src: cover.src, width: 1200, format: 'jpeg' })).src
+    : undefined;
+
+const gallery = {
+  '@type': 'ImageGallery',
+  name: title,
+  description: caption,
+  url: `${SITE.url}/logbook/${album.id.split('/')[0]}/`,
+  author: { '@id': `${SITE.url}/#person` },
+};
+const crumbs = {
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: SITE.url },
+    { '@type': 'ListItem', position: 2, name: 'Logbook', item: `${SITE.url}/logbook/` },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: title,
+      item: `${SITE.url}/logbook/${album.id.split('/')[0]}/`,
+    },
+  ],
+};
+---
+
+<BaseLayout
+  title={`${title} · Logbook`}
+  description={caption ?? `${title}. ${photos.length} photos.`}
+  current="/logbook/"
+  bodyClass="bg-sea-700"
+  image={ogImage}
+  imageAlt={title}
+  jsonLd={[gallery, crumbs]}
+>
+  <section class="bg-[linear-gradient(to_bottom,var(--color-sea-600),var(--color-sea-700))] pt-32 pb-24 text-foam">
+    <div class="wrap">
+      <p class="eyebrow text-tan">
+        <a href={href('/logbook/')} class="hover:text-foam">
+          Logbook
+        </a>
+        {meta && <span class="text-foam/50"> · {meta}</span>}
+      </p>
+      <h1 class="mt-3 font-display text-[clamp(2.8rem,6vw,5.2rem)] leading-[1.02]">{title}</h1>
+      {caption && <p class="mt-5 max-w-2xl text-lg text-foam/75 md:text-xl">{caption}</p>}
+
+      <div class="mt-14 columns-1 gap-4 sm:columns-2 lg:columns-3 [&>*]:mb-4 [&>*]:break-inside-avoid">
+        {items.map((p, i) =>
+          p.kind === 'image' ? (
+            <a
+              href={p.full}
+              data-lb={i}
+              data-caption={p.caption ?? ''}
+              class="group block overflow-hidden rounded-2xl ring-1 ring-white/10"
+              aria-label={`Open photo ${i + 1}${p.caption ? `: ${p.caption}` : ''}`}
+            >
+              <Image
+                src={p.src}
+                alt={p.alt ?? p.caption ?? ''}
+                widths={[480, 720, 960]}
+                sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+                class="h-auto w-full transition duration-700 group-hover:scale-[1.03]"
+                loading={i < 3 ? 'eager' : 'lazy'}
+              />
+            </a>
+          ) : (
+            <figure class="overflow-hidden rounded-2xl ring-1 ring-white/10">
+              <video
+                controls
+                preload="metadata"
+                playsinline
+                class="h-auto w-full"
+                poster={p.poster?.src}
+              >
+                <source src={href(p.src)} />
+              </video>
+              {p.caption && (
+                <figcaption class="px-3 py-2 text-sm text-foam/60">{p.caption}</figcaption>
+              )}
+            </figure>
+          ),
+        )}
+      </div>
+
+      <p class="mt-14">
+        <a href={href('/logbook/')} class="link-tan">
+          ← All entries
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <dialog
+    id="lightbox"
+    class="m-0 h-dvh max-h-none w-screen max-w-none bg-abyss/95 p-0 text-foam backdrop:bg-abyss/90 open:flex open:flex-col"
+    aria-label="Photo viewer"
+  >
+    <div class="flex items-center justify-between px-4 py-3 text-sm text-foam/70">
+      <span data-lb-count></span>
+      <button type="button" data-lb-close class="btn btn-ghost px-3 py-1.5">
+        Close
+      </button>
+    </div>
+    <figure class="relative flex min-h-0 flex-1 flex-col items-center justify-center px-4 pb-4">
+      <img data-lb-img alt="" class="max-h-full max-w-full rounded-lg object-contain" />
+      <figcaption data-lb-cap class="mt-3 min-h-6 text-center text-sm text-foam/70"></figcaption>
+    </figure>
+    <button
+      type="button"
+      data-lb-prev
+      class="absolute top-1/2 left-2 -translate-y-1/2 rounded-full bg-black/40 p-3 hover:bg-black/60"
+      aria-label="Previous photo"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M12.5 4 6.5 10l6 6" fill="none" stroke="currentColor" stroke-width="1.8"></path>
+      </svg>
+    </button>
+    <button
+      type="button"
+      data-lb-next
+      class="absolute top-1/2 right-2 -translate-y-1/2 rounded-full bg-black/40 p-3 hover:bg-black/60"
+      aria-label="Next photo"
+    >
+      <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="m7.5 4 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8"></path>
+      </svg>
+    </button>
+  </dialog>
+
+  <script>
+    const dialog = document.getElementById('lightbox') as HTMLDialogElement | null;
+    const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-lb]'));
+    if (dialog && links.length) {
+      const img = dialog.querySelector<HTMLImageElement>('[data-lb-img]')!;
+      const cap = dialog.querySelector<HTMLElement>('[data-lb-cap]')!;
+      const count = dialog.querySelector<HTMLElement>('[data-lb-count]')!;
+      let i = 0;
+      const show = (n: number) => {
+        i = (n + links.length) % links.length;
+        const a = links[i];
+        img.src = a.href;
+        img.alt = a.querySelector('img')?.alt ?? '';
+        cap.textContent = a.dataset.caption ?? '';
+        count.textContent = `${i + 1} / ${links.length}`;
+        // Warm the neighbours.
+        [i + 1, i - 1].forEach((k) => {
+          const pre = new Image();
+          pre.src = links[(k + links.length) % links.length].href;
+        });
+      };
+      links.forEach((a, n) =>
+        a.addEventListener('click', (e) => {
+          e.preventDefault();
+          show(n);
+          dialog.showModal();
+        }),
+      );
+      dialog.querySelector('[data-lb-close]')?.addEventListener('click', () => dialog.close());
+      dialog.querySelector('[data-lb-prev]')?.addEventListener('click', () => show(i - 1));
+      dialog.querySelector('[data-lb-next]')?.addEventListener('click', () => show(i + 1));
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) dialog.close();
+      });
+      dialog.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') show(i + 1);
+        if (e.key === 'ArrowLeft') show(i - 1);
+      });
+      // Swipe on phones.
+      let x0 = 0;
+      dialog.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+      dialog.addEventListener(
+        'touchend',
+        (e) => {
+          const dx = e.changedTouches[0].clientX - x0;
+          if (Math.abs(dx) > 50) show(dx < 0 ? i + 1 : i - 1);
+        },
+        { passive: true },
+      );
+    }
+  </script>
+</BaseLayout>

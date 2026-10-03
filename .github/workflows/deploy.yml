@@ -14,32 +14,56 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+# Repo variables (Settings → Secrets and variables → Actions → Variables):
+#   SITE_MODE     "live" publishes the real site at the root.
+#                 Anything else publishes the "site being built" page from
+#                 construction/ at the root, with the real build tucked under
+#                 an unlisted path so it can be previewed on any device.
+#   PREVIEW_PATH  That unlisted path, e.g. "preview-abc123" (no slashes).
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SITE_MODE: ${{ vars.SITE_MODE }}
+      PREVIEW_PATH: ${{ vars.PREVIEW_PATH || 'preview' }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version-file: .nvmrc
           cache: npm
+      - uses: actions/cache@v6
+        with:
+          path: node_modules/.astro
+          key: astro-images-${{ hashFiles('src/content/**', 'src/assets/**') }}
+          restore-keys: astro-images-
       - run: npm ci
       - run: npm run lint
       - run: npm run check
-      - run: npm run build
-      # Repo variable SITE_MODE controls what goes public:
-      #   live         -> the Astro build in dist/
-      #   anything else (default) -> the "site being built" page in construction/
+
+      - name: Build (live)
+        if: env.SITE_MODE == 'live'
+        run: |
+          npm run build
+          rm -rf _site && mv dist _site
+
+      - name: Build (construction + unlisted preview)
+        if: env.SITE_MODE != 'live'
+        env:
+          SITE_BASE: /${{ env.PREVIEW_PATH }}/
+          PUBLIC_SITE_PREVIEW: '1'
+        run: |
+          npm run build
+          rm -rf _site && mkdir _site
+          cp -r construction/. _site/
+          mkdir -p "_site/$PREVIEW_PATH"
+          cp -r dist/. "_site/$PREVIEW_PATH/"
+          echo "Preview will be at https://roaninpodkin.com/$PREVIEW_PATH/" >> "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/upload-pages-artifact@v5
         with:
-          path: ${{ vars.SITE_MODE == 'live' && 'dist' || 'construction' }}
-      # Always keep the real build as a downloadable artifact for review.
-      - uses: actions/upload-artifact@v7
-        if: vars.SITE_MODE != 'live'
-        with:
-          name: site-preview
-          path: dist
-          retention-days: 14
+          path: _site
 
   deploy:
     needs: build

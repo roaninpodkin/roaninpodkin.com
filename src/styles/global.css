@@ -1,14 +1,316 @@
 @import 'tailwindcss';
+@import '@fontsource-variable/cormorant-garamond';
+@import '@fontsource-variable/cormorant-garamond/wght-italic.css';
+@import '@fontsource-variable/instrument-sans';
 @plugin '@tailwindcss/typography';
 
+/*
+  Palette: the seven blues are Roanin's "Deep Autumn" swatch, surface to floor.
+  Warm tan, sand and lagoon come from his reference photos.
+*/
 @theme {
-  /* System font stack: zero font downloads, fastest first paint. */
+  --font-display:
+    'Cormorant Garamond Variable', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    'Instrument Sans Variable', 'Instrument Sans', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+
+  --color-foam: #f6f9fa;
+  --color-sand-100: #f3eddf;
+  --color-sand-200: #e8dec7;
+  --color-sand-300: #d6c7a7;
+  --color-tan: #c9ac7e; /* warm tan, for dark backgrounds */
+  --color-tan-deep: #7d6037; /* warm tan, for light backgrounds */
+  --color-ink: #0b1b2b;
+
+  --color-sea-100: #a3c7d5;
+  --color-sea-200: #6fa9c1;
+  --color-sea-300: #4a8fae;
+  --color-sea-400: #336684;
+  --color-sea-500: #214d77;
+  --color-sea-600: #1a3c62;
+  --color-sea-700: #0b2245;
+  --color-abyss: #061430;
+
+  --color-lagoon: #3cc0cb;
+  --color-lagoon-deep: #1b8f9c;
+  --color-moss: #5e7a49;
+  --color-moss-light: #8aa36e;
+
+  --ease-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
 @layer base {
   html {
-    color-scheme: light dark;
+    color-scheme: light;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
   }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+  body {
+    @apply bg-foam font-sans text-ink antialiased;
+  }
+  ::selection {
+    background: var(--color-lagoon);
+    color: var(--color-ink);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-lagoon);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p,
+  li {
+    text-wrap: pretty;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply font-sans text-[0.72rem] font-medium tracking-[0.18em] uppercase;
+  }
+  .wrap {
+    @apply mx-auto w-full max-w-6xl px-6;
+  }
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-[background-color,color,transform,box-shadow] duration-200;
+  }
+  .btn:active {
+    transform: translateY(1px);
+  }
+  .btn-ink {
+    @apply bg-ink text-foam hover:bg-sea-700;
+  }
+  .btn-foam {
+    @apply bg-foam text-ink hover:bg-white;
+  }
+  .btn-lagoon {
+    @apply bg-lagoon text-ink shadow-[0_10px_30px_-12px_rgba(60,192,203,0.8)] hover:bg-[#55cbd5];
+  }
+  .btn-ghost {
+    @apply border border-current/30 hover:border-current/70;
+  }
+
+  /* Links inside running text */
+  .link {
+    @apply underline decoration-current/40 underline-offset-[0.2em] transition hover:decoration-current;
+  }
+  .link-tan {
+    @apply text-tan underline decoration-tan/40 underline-offset-[0.25em] hover:decoration-tan;
+  }
+
+  /* Scroll reveal (no-op without JS or with reduced motion) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.8s var(--ease-soft),
+      transform 0.8s var(--ease-soft);
+  }
+  .reveal.is-in,
+  .no-js .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+
+  /* River stones: soft, irregular shapes instead of cards */
+  .stone {
+    @apply relative bg-sand-100/90 px-9 py-8 text-ink shadow-[0_24px_48px_-32px_rgba(11,27,43,0.5)] ring-1 ring-white/70 md:px-12 md:py-10;
+    border-radius: 4rem 3rem 4.5rem 3.5rem / 3rem 4rem 3rem 4.5rem;
+  }
+  .stone:nth-child(2) {
+    border-radius: 3.5rem 4.5rem 3rem 4rem / 4.5rem 3rem 4rem 3rem;
+  }
+  .stone:nth-child(3) {
+    border-radius: 4.5rem 3.5rem 4rem 3rem / 3rem 4.5rem 3.5rem 4rem;
+  }
+
+  /* The note on the wall */
+  .wall-note {
+    @apply relative bg-sand-100 p-8 text-ink shadow-[0_30px_50px_-30px_rgba(0,0,0,0.6)];
+    transform: rotate(-1.5deg);
+  }
+  .wall-note::before {
+    content: '';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    width: 84px;
+    height: 26px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(11, 27, 43, 0.08);
+    backdrop-filter: blur(2px);
+  }
+
+  /* Underwater light shafts */
+  .shaft {
+    position: absolute;
+    top: -10%;
+    height: 120%;
+    width: clamp(90px, 16vw, 240px);
+    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 70%);
+    filter: blur(14px);
+    transform: skewX(-12deg);
+    animation: sway 16s ease-in-out infinite;
+  }
+
+  /* Rising bubbles */
+  .bubble {
+    position: absolute;
+    bottom: -40px;
+    width: var(--s, 10px);
+    height: var(--s, 10px);
+    border-radius: 50%;
+    pointer-events: none;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: radial-gradient(
+      circle at 30% 30%,
+      rgba(255, 255, 255, 0.4),
+      rgba(255, 255, 255, 0.02) 70%
+    );
+    animation: rise var(--d, 18s) linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  /* Bioluminescence on the floor */
+  .spark {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    pointer-events: none;
+    background: var(--color-lagoon);
+    box-shadow: 0 0 8px 2px rgba(60, 192, 203, 0.55);
+    animation: twinkle var(--d, 5s) ease-in-out infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shaft,
+    .bubble,
+    .spark,
+    .wave {
+      animation: none !important;
+    }
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes sway {
+  0%,
+  100% {
+    transform: skewX(-12deg) translateX(0);
+  }
+  50% {
+    transform: skewX(-12deg) translateX(22px);
+  }
+}
+@keyframes rise {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  8% {
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(-55vh) translateX(10px);
+  }
+  100% {
+    transform: translateY(-115vh) translateX(-6px);
+    opacity: 0;
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.1;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.15);
+  }
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* Prose themes. Unlayered on purpose: they must beat .prose from the utilities layer. */
+.prose-sand {
+  --tw-prose-body: #233342;
+  --tw-prose-headings: var(--color-ink);
+  --tw-prose-lead: #3a4a5a;
+  --tw-prose-links: var(--color-sea-500);
+  --tw-prose-bold: var(--color-ink);
+  --tw-prose-counters: var(--color-tan-deep);
+  --tw-prose-bullets: var(--color-tan-deep);
+  --tw-prose-hr: rgba(11, 27, 43, 0.12);
+  --tw-prose-quotes: var(--color-sea-600);
+  --tw-prose-quote-borders: var(--color-tan);
+  --tw-prose-captions: #5a6a7a;
+}
+.prose-sea {
+  --tw-prose-body: rgba(246, 249, 250, 0.86);
+  --tw-prose-headings: var(--color-foam);
+  --tw-prose-lead: rgba(246, 249, 250, 0.8);
+  --tw-prose-links: var(--color-tan);
+  --tw-prose-bold: var(--color-foam);
+  --tw-prose-counters: var(--color-tan);
+  --tw-prose-bullets: var(--color-tan);
+  --tw-prose-hr: rgba(246, 249, 250, 0.15);
+  --tw-prose-quotes: var(--color-sand-200);
+  --tw-prose-quote-borders: var(--color-tan);
+  --tw-prose-captions: rgba(246, 249, 250, 0.6);
+}
+.prose :where(h2, h3) {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.prose :where(blockquote) {
+  @apply font-display text-2xl leading-snug font-normal not-italic;
+}
+.prose :where(blockquote p:first-of-type)::before,
+.prose :where(blockquote p:last-of-type)::after {
+  content: none;
 }

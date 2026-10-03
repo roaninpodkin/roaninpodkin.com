@@ -1,33 +1,68 @@
 ---
 import { SITE } from '../consts';
+import { href, stripBase } from '../lib/url';
 
 export interface Props {
   title?: string;
   description?: string;
+  /** Absolute URL or site-relative path (without base). */
   image?: string;
-  type?: 'website' | 'article';
+  imageAlt?: string;
+  type?: 'website' | 'article' | 'profile';
   noindex?: boolean;
+  /** Extra schema.org objects to add alongside the Person. */
+  jsonLd?: Record<string, unknown>[];
+  published?: Date;
+  modified?: Date;
 }
 
 const {
   title,
   description = SITE.description,
   image = SITE.ogImage,
+  imageAlt = `${SITE.name}`,
   type = 'website',
   noindex = false,
+  jsonLd = [],
+  published,
+  modified,
 } = Astro.props;
 
-const fullTitle = title ? `${title} | ${SITE.name}` : SITE.title;
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const imageURL = new URL(image, Astro.site);
+const isPreview = import.meta.env.PUBLIC_SITE_PREVIEW === '1';
+const fullTitle = title
+  ? title.startsWith(SITE.name)
+    ? title
+    : `${title} | ${SITE.name}`
+  : SITE.title;
 
-const personSchema = {
-  '@context': 'https://schema.org',
+// Canonical always points at the production URL, even on preview builds.
+let path = stripBase(Astro.url.pathname);
+if (!/\.[a-z0-9]+$/i.test(path) && !path.endsWith('/')) path += '/';
+const canonical = new URL(path, SITE.url);
+const imageURL = image.startsWith('http') ? image : new URL(image, SITE.url).href;
+
+const person = {
   '@type': 'Person',
+  '@id': `${SITE.url}/#person`,
   name: SITE.name,
   url: SITE.url,
-  sameAs: SITE.socials.map((s) => s.href),
+  image: new URL('/og-default.png', SITE.url).href,
+  email: `mailto:${SITE.email}`,
+  jobTitle: SITE.jobTitle,
+  worksFor: { '@type': 'Organization', name: SITE.employer, url: SITE.avoca },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: SITE.school },
+  homeLocation: { '@type': 'Place', name: SITE.location },
+  sameAs: [SITE.linkedin],
 };
+const website = {
+  '@type': 'WebSite',
+  '@id': `${SITE.url}/#website`,
+  url: SITE.url,
+  name: SITE.name,
+  publisher: { '@id': `${SITE.url}/#person` },
+  inLanguage: SITE.lang,
+};
+const graph = { '@context': 'https://schema.org', '@graph': [person, website, ...jsonLd] };
 ---
 
 <meta charset="utf-8" />
@@ -35,14 +70,14 @@ const personSchema = {
 <title>{fullTitle}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
-{noindex && <meta name="robots" content="noindex, nofollow" />}
+{(noindex || isPreview) && <meta name="robots" content="noindex, nofollow" />}
 <meta name="generator" content={Astro.generator} />
-<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-<meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#0b2245" />
+<meta name="author" content={SITE.name} />
 
-<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-<link rel="sitemap" href="/sitemap-index.xml" />
+<link rel="icon" type="image/svg+xml" href={href('/favicon.svg')} />
+<link rel="apple-touch-icon" href={href('/apple-touch-icon.png')} />
+{!isPreview && <link rel="sitemap" href="/sitemap-index.xml" />}
 
 <!-- Open Graph -->
 <meta property="og:type" content={type} />
@@ -52,13 +87,17 @@ const personSchema = {
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={imageURL} />
-<meta property="og:image:width" content="1200" />
-<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={imageAlt} />
+{image === SITE.ogImage && <meta property="og:image:width" content="1200" />}
+{image === SITE.ogImage && <meta property="og:image:height" content="630" />}
+{published && <meta property="article:published_time" content={published.toISOString()} />}
+{modified && <meta property="article:modified_time" content={modified.toISOString()} />}
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={imageURL} />
+<meta name="twitter:image:alt" content={imageAlt} />
 
-<script type="application/ld+json" is:inline set:html={JSON.stringify(personSchema)} />
+<script type="application/ld+json" is:inline set:html={JSON.stringify(graph)} />

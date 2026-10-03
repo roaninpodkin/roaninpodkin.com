@@ -1,0 +1,28 @@
+---
+interface Props {
+  eyebrow?: string;
+  heading: string;
+  lede?: string;
+  align?: 'left' | 'center';
+  tone?: 'light' | 'dark';
+  as?: 'h1' | 'h2';
+  class?: string;
+}
+const {
+  eyebrow,
+  heading,
+  lede,
+  align = 'left',
+  tone = 'dark',
+  as: Tag = 'h2',
+  class: cls = '',
+} = Astro.props;
+const eyebrowColor = tone === 'light' ? 'text-tan-deep' : 'text-tan';
+const ledeColor = tone === 'light' ? 'text-ink/70' : 'text-foam/75';
+---
+
+<div class={`reveal max-w-3xl ${align === 'center' ? 'mx-auto text-center' : ''} ${cls}`}>
+  {eyebrow && <p class={`eyebrow ${eyebrowColor}`}>{eyebrow}</p>}
+  <Tag class="mt-3 font-display text-[clamp(2.4rem,5vw,4.25rem)] leading-[1.02]">{heading}</Tag>
+  {lede && <p class={`mt-5 text-lg leading-relaxed md:text-xl ${ledeColor}`}>{lede}</p>}
+</div>

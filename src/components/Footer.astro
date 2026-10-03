@@ -1,0 +1,41 @@
+---
+import { NAV, SITE } from '../consts';
+import { href } from '../lib/url';
+const year = new Date().getFullYear();
+---
+
+<footer class="relative overflow-hidden bg-[linear-gradient(to_bottom,var(--color-sea-700),var(--color-abyss))] text-foam">
+  <div class="wrap py-16">
+    <div class="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
+      <div>
+        <a href={href('/')} class="font-display text-3xl">
+          Roanin Podkin
+        </a>
+        <p class="mt-2 max-w-sm text-sm text-foam/60">{SITE.location}</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href={`mailto:${SITE.email}`} class="btn btn-foam">
+          Email me
+        </a>
+        <a href={SITE.linkedin} rel="me noopener" class="btn btn-ghost">
+          LinkedIn
+        </a>
+      </div>
+    </div>
+    <div class="mt-12 flex flex-col gap-4 border-t border-foam/10 pt-6 text-sm text-foam/50 md:flex-row md:items-center md:justify-between">
+      <nav aria-label="Footer" class="flex flex-wrap gap-x-6 gap-y-2">
+        {NAV.map((n) => (
+          <a href={href(n.path)} class="hover:text-foam">
+            {n.label}
+          </a>
+        ))}
+        <a href={href('/contact/')} class="hover:text-foam">
+          Contact
+        </a>
+      </nav>
+      <p>
+        &copy; {year} {SITE.name}
+      </p>
+    </div>
+  </div>
+</footer>

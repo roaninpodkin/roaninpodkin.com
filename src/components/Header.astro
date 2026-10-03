@@ -1,0 +1,70 @@
+---
+import { NAV, SITE } from '../consts';
+import { href } from '../lib/url';
+
+interface Props {
+  /** 'light' = dark text on a light background; 'dark' = light text on water. */
+  tone?: 'light' | 'dark';
+  current?: string;
+}
+const { tone = 'dark', current = '' } = Astro.props;
+const light = tone === 'light';
+---
+
+<header class={`absolute inset-x-0 top-0 z-30 ${light ? 'text-ink' : 'text-foam'}`}>
+  <div class="wrap flex h-20 items-center justify-between">
+    <a
+      href={href('/')}
+      class="font-display text-2xl tracking-tight"
+      aria-label="Roanin Podkin, home"
+    >
+      Roanin Podkin
+    </a>
+
+    <nav aria-label="Main" class="hidden items-center gap-7 text-sm md:flex">
+      {NAV.map((n) => (
+        <a
+          href={href(n.path)}
+          aria-current={current === n.path ? 'page' : undefined}
+          class="opacity-75 transition hover:opacity-100 aria-[current=page]:underline aria-[current=page]:decoration-tan aria-[current=page]:underline-offset-8 aria-[current=page]:opacity-100"
+        >
+          {n.label}
+        </a>
+      ))}
+      <span class="h-4 w-px bg-current opacity-30" aria-hidden="true"></span>
+      <a href={`mailto:${SITE.email}`} class="opacity-75 transition hover:opacity-100">
+        Email
+      </a>
+      <a href={SITE.linkedin} rel="me noopener" class="opacity-75 transition hover:opacity-100">
+        LinkedIn
+      </a>
+    </nav>
+
+    <details class="relative md:hidden">
+      <summary class="cursor-pointer list-none rounded-full border border-current/30 px-3.5 py-1.5 text-sm select-none">
+        Menu
+      </summary>
+      <nav
+        aria-label="Main"
+        class="absolute right-0 z-40 mt-2 w-56 rounded-2xl bg-ink p-2 text-foam shadow-2xl ring-1 ring-white/10"
+      >
+        {NAV.map((n) => (
+          <a href={href(n.path)} class="block rounded-xl px-3 py-2 hover:bg-white/10">
+            {n.label}
+          </a>
+        ))}
+        <div class="my-1 h-px bg-white/10"></div>
+        <a href={`mailto:${SITE.email}`} class="block rounded-xl px-3 py-2 hover:bg-white/10">
+          Email
+        </a>
+        <a
+          href={SITE.linkedin}
+          rel="me noopener"
+          class="block rounded-xl px-3 py-2 hover:bg-white/10"
+        >
+          LinkedIn
+        </a>
+      </nav>
+    </details>
+  </div>
+</header>

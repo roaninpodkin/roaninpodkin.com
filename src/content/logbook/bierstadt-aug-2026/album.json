@@ -1,0 +1,51 @@
+{
+  "title": "Bierstadt and Broomfield",
+  "place": "Colorado",
+  "date": "Aug 2026",
+  "sortDate": "2026-08-29",
+  "caption": "Episode one with Dennis Yu, Jason Amato's workshop, a 5 a.m. start up Mt Bierstadt, and the Denver airport chair.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./01-summit.jpg",
+      "alt": "Roanin on the summit of Mt Bierstadt, thumbs up",
+      "caption": "14,065 ft."
+    },
+    {
+      "kind": "image",
+      "src": "./02-sign.jpg",
+      "alt": "Roanin and a hiker at the handwritten Mt Bierstadt 14,065 sign",
+      "caption": "Cardboard sign on the rocks."
+    },
+    {
+      "kind": "image",
+      "src": "./03-operators.jpg",
+      "alt": "Roanin on Mt Bierstadt with home-service operators and a camera on a tripod",
+      "caption": "Operators from Jason Amato's lab, same summit."
+    },
+    {
+      "kind": "image",
+      "src": "./04-workshop.jpg",
+      "alt": "Roanin in the Operations Mastery Lab workshop room",
+      "caption": "The workshop room."
+    },
+    {
+      "kind": "image",
+      "src": "./05-episode-one.jpg",
+      "alt": "Roanin and Dennis Yu recording episode one in Broomfield",
+      "caption": "Episode one, Broomfield."
+    },
+    {
+      "kind": "image",
+      "src": "./06-airport.jpg",
+      "alt": "Roanin and Dennis Yu at Denver International Airport",
+      "caption": "Denver airport, before the 7:20 flight."
+    },
+    {
+      "kind": "image",
+      "src": "./07-airport-tape.jpg",
+      "alt": "Roanin and Dennis Yu recording at Denver International Airport",
+      "caption": "Phone on the table, no mic."
+    }
+  ]
+}

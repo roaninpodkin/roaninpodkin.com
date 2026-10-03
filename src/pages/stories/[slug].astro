@@ -1,0 +1,27 @@
+---
+import { getCollection, render } from 'astro:content';
+import StoryLayout from '../../layouts/StoryLayout.astro';
+
+export async function getStaticPaths() {
+  const stories = (await getCollection('stories', ({ data }) => !data.draft)).sort(
+    (a, b) => a.data.order - b.data.order,
+  );
+  return stories.map((story, i) => ({
+    params: { slug: story.id },
+    props: {
+      story,
+      index: i + 1,
+      total: stories.length,
+      prev: stories[i - 1],
+      next: stories[i + 1],
+    },
+  }));
+}
+
+const { story, index, total, prev, next } = Astro.props;
+const { Content } = await render(story);
+---
+
+<StoryLayout story={story} index={index} total={total} prev={prev} next={next}>
+  <Content />
+</StoryLayout>

@@ -1,0 +1,136 @@
+---
+/**
+ * The home page's navigation is a dive gauge: a rail on desktop, a pill on
+ * phones. The number counts down as you scroll and each tick is a link.
+ */
+interface Stop {
+  id: string;
+  depth: number;
+  label: string;
+}
+interface Props {
+  stops: readonly Stop[];
+}
+const { stops } = Astro.props;
+---
+
+<nav aria-label="Depth" class="depth-gauge" data-depth-gauge data-tone="light">
+  <div
+    class="fixed top-1/2 left-5 z-40 hidden -translate-y-1/2 flex-col transition-colors duration-500 lg:flex xl:left-8"
+    data-rail
+  >
+    <div class="mb-6 font-display text-4xl leading-none tabular-nums">
+      <span data-depth-value>0</span>
+      <span class="ml-0.5 text-lg">m</span>
+    </div>
+    <ol class="relative space-y-4 border-l border-current/25 pl-4">
+      {stops.map((s) => (
+        <li>
+          <a
+            href={`#${s.id}`}
+            data-stop={s.id}
+            class="group flex items-center gap-3 text-[0.68rem] tracking-[0.16em] uppercase opacity-55 transition hover:opacity-100 [&.is-active]:opacity-100"
+          >
+            <span class="absolute -left-[3px] h-[5px] w-[5px] rounded-full bg-current opacity-0 transition group-[.is-active]:opacity-100" />
+            <span class="w-5 font-display text-base tracking-normal normal-case tabular-nums">
+              {s.depth}
+            </span>
+            <span>{s.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+
+  <details class="fixed bottom-4 left-1/2 z-40 -translate-x-1/2 lg:hidden">
+    <summary class="flex cursor-pointer list-none items-center gap-3 rounded-full bg-ink/90 px-4 py-2 text-foam shadow-xl ring-1 ring-white/10 backdrop-blur select-none">
+      <span class="font-display text-xl tabular-nums">
+        <span data-depth-value>0</span> m
+      </span>
+      <span class="text-sm text-foam/70" data-depth-label>
+        {stops[0].label}
+      </span>
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" class="opacity-60">
+        <path d="M2 7.5 6 3.5l4 4" fill="none" stroke="currentColor" stroke-width="1.5"></path>
+      </svg>
+    </summary>
+    <ol class="absolute bottom-12 left-1/2 w-60 -translate-x-1/2 rounded-2xl bg-ink/95 p-2 text-foam shadow-2xl ring-1 ring-white/10">
+      {stops.map((s) => (
+        <li>
+          <a
+            href={`#${s.id}`}
+            data-stop={s.id}
+            class="flex items-center justify-between rounded-xl px-3 py-2 hover:bg-white/10 [&.is-active]:bg-white/10"
+          >
+            <span>{s.label}</span>
+            <span class="font-display text-foam/70 tabular-nums">{s.depth} m</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </details>
+</nav>
+
+<style>
+  .depth-gauge[data-tone='light'] [data-rail] {
+    color: var(--color-ink);
+  }
+  .depth-gauge[data-tone='dark'] [data-rail] {
+    color: var(--color-foam);
+  }
+</style>
+
+<script>
+  const gauge = document.querySelector<HTMLElement>('[data-depth-gauge]');
+  if (gauge) {
+    const stopLinks = Array.from(gauge.querySelectorAll<HTMLAnchorElement>('[data-stop]'));
+    const ids = Array.from(new Set(stopLinks.map((a) => a.dataset.stop!)));
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    const depths = sections.map((s) => Number(s.dataset.depth ?? 0));
+    const labels = sections.map((s) => s.dataset.label ?? '');
+    const values = gauge.querySelectorAll<HTMLElement>('[data-depth-value]');
+    const labelEl = gauge.querySelector<HTMLElement>('[data-depth-label]');
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const y = window.scrollY;
+      const probe = y + window.innerHeight * 0.4;
+      const tops = sections.map((s) => s.getBoundingClientRect().top + y);
+      // Which stop is highlighted: the section under the upper part of the viewport.
+      let active = 0;
+      for (let i = 0; i < sections.length; i++) if (probe >= tops[i]) active = i;
+      // The number: 0 at the top of the page, each stop's depth exactly at its top edge.
+      let di = 0;
+      for (let i = 0; i < sections.length; i++) if (y >= tops[i] - 1) di = i;
+      const end = tops[di + 1] ?? document.documentElement.scrollHeight - window.innerHeight;
+      const t = Math.min(1, Math.max(0, (y - tops[di]) / Math.max(1, end - tops[di])));
+      const next = depths[di + 1] ?? depths[di];
+      const depth = depths[di] + (next - depths[di]) * t;
+      const text = String(Math.round(depth));
+      values.forEach((v) => {
+        if (v.textContent !== text) v.textContent = text;
+      });
+      if (labelEl) labelEl.textContent = labels[active];
+      stopLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.stop === ids[active]));
+      gauge.dataset.tone = sections[active]?.dataset.tone ?? 'dark';
+    };
+    const onScroll = () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(update);
+      }
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    update();
+
+    gauge
+      .querySelectorAll('details a')
+      .forEach((a) =>
+        a.addEventListener('click', () => a.closest('details')?.removeAttribute('open')),
+      );
+  }
+</script>
