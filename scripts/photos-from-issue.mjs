@@ -230,7 +230,7 @@ for (const a of attachments) {
   n += 1;
   const file = `${String(n).padStart(3, '0')}-${hash}.jpg`;
   const rel = `./${file}`;
-  if (existing.has(rel)) {
+  if (existing.has(hash)) {
     n -= 1;
     continue;
   }
