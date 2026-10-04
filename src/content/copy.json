@@ -6,7 +6,7 @@
   },
   "islands": {
     "heading": "The islands",
-    "lede": "My story, in order. Click an island to read it. The side quests are off to the side."
+    "lede": "My story, in order. Click an island to read it."
   },
   "now": {
     "heading": "What I'm doing now",
@@ -21,17 +21,17 @@
     },
     "consulting": {
       "heading": "Before Avoca: consulting",
-      "body": "In 2025 I worked as an AI consultant. The biggest project was La Cumbre Country Club, where I presented to the whole team on bringing AI into the club, then signed a contract to do it and completed it. I also worked with small businesses.",
+      "body": "In 2025 I worked as an AI consultant. The biggest project was La Cumbre Country Club, where I presented to the whole team on bringing AI into the club, then signed a contract and did the work. I also worked with small businesses.",
       "bullets": [
         "One-on-one training sessions",
-        "Automated reporting",
-        "Knowledge-search agents",
-        "And more"
+        "Automating workflows",
+        "Business plan rollout",
+        "More"
       ]
     },
     "project": {
       "heading": "Finsight, a project I keep tabs on",
-      "body": "Young fish die early at a high rate, and you can see trouble coming in how they behave. Finsight is my idea for using pattern recognition on video, through computer vision, to catch early signs of disease, stress, hunger or low oxygen before it spreads. It started with my brother's farm in mind, and I still keep tabs on it."
+      "body": "Young fish die early at a high rate, and you can see trouble coming in how they behave. Finsight is my idea for using pattern recognition on video, through computer vision, to catch early signs of disease, stress, hunger or low oxygen before it spreads. It started with my brother's farm in mind."
     }
   },
   "testimonials": {
@@ -65,34 +65,34 @@
     "cta": "Say hello"
   },
   "about": {
-    "title": "About Roanin Podkin",
-    "description": "Who Roanin Podkin is: Vacaville, a fish farm in Washington, UCSB economics and a semester in Madrid, two months solo in Asia, teaching himself AI, La Cumbre, and now Avoca in Santa Barbara.",
+    "title": "About",
+    "description": "Who Roanin Podkin is: Vacaville, a fish farm in Washington, UCSB economics, Madrid, two months solo in Asia, teaching himself AI, La Cumbre, and now Avoca in Santa Barbara.",
     "sections": [
       {
         "heading": "Where I started",
         "paragraphs": [
-          "I grew up in Vacaville, California. I've played golf since I was a kid, made Eagle Scout, and worked my first job at In-N-Out for a year in high school. I was always looking for a way to make a few dollars. The work ethic was there from the start; the jobs just gave it somewhere to go.",
+          "I grew up in Vacaville, California. I've played sports my entire life: golf, soccer, cross country, and more. I did Boy Scouts and made the rank of Eagle Scout. My first job was at In-N-Out, for a year in high school. I've always looked for a way to make a few dollars, and I've had small entrepreneurial ventures the whole way through, whether it was selling guppies or bracelets in elementary school. It was always something.",
           "My older brother Colby runs a fish farm in Washington, and he was the first entrepreneur I watched up close. We strategized together through high school and college, and I spent a couple of summers working with him. Being around the fish gave me Finsight, an idea for catching early signs of disease, stress, hunger or low oxygen from how fish behave on video. I still keep tabs on it."
         ]
       },
       {
         "heading": "Santa Barbara",
         "paragraphs": [
-          "I studied economics at UC Santa Barbara, class of 2026, with a semester in Madrid in fall 2024 that I used to see as much of Europe as I could.",
-          "At the start of my sophomore year I took a job at La Cumbre Country Club to meet the members and play free golf. The members, successful business owners, became mentors. We golfed together and they talked to me about my career and my life. It's through them that I found Avoca."
+          "I studied economics at UC Santa Barbara, class of 2026, and made lifelong friends who pushed me to be a better person. I also got the chance to study abroad in Madrid, and I used it to see as much of Europe as I could.",
+          "At the start of 2024, in my sophomore year, I took a job at La Cumbre Country Club to meet the members and play free golf. The members, successful business owners, became mentors. We golfed together and they talked to me about my career and my life. It's through them that I found Avoca."
         ]
       },
       {
         "heading": "Stepping back",
         "paragraphs": [
-          "The summer before my last year I went to Asia alone for almost two months: Taiwan, Japan, Vietnam, Thailand, Singapore and Indonesia. I got PADI-certified on Ko Tao and spent four days on a boat from Lombok to Flores, with whale sharks in between. Mostly it was a chance to step back and ask whether I liked who I'd become and who I wanted to be. I still do that audit on purpose."
+          "The summer before my last year I went to Asia alone for almost two months: Taiwan, Japan, Vietnam, Thailand, Singapore and Indonesia. I got PADI scuba certified, went on some crazy side quests, met all kinds of people, saw some of the most beautiful nature I've ever seen, dove with whale sharks, and lived on a boat for four days. Mostly, though, it was a chance to step back and ask: do I like who I've become, who do I want to be, and what do I really want? I still do that audit often."
         ]
       },
       {
         "heading": "Then AI happened",
         "paragraphs": [
           "I came back in the middle of the AI boom and went deep: hours of videos a day, then testing what the models could actually do, building agents, automating the boring work. I started telling people, then doing it for them, and got a business license as an AI consultant. The biggest project was La Cumbre, where I presented to the whole team and then completed a contract. The most useful thing I did was sit down with owners one-on-one and teach them.",
-          "My mentors said get real industry experience. I look for good leaders, and I found them at Avoca, where I joined the sales development team in Santa Barbara in July 2026."
+          "My mentors said to get real industry experience. I look for good leaders, and I found them at Avoca, where I joined the sales development team in Santa Barbara in July 2026."
         ]
       },
       {
@@ -104,20 +104,38 @@
     ],
     "values": {
       "heading": "How I decide",
-      "intro": "I keep my values written out. Relationships come first. The rest matter just as much as each other.",
+      "rule": "Every opportunity I assess, I check against my values and my big goals, and I make sure it's aligned with both.",
+      "intro": "I keep my values written out.",
       "first": {
         "name": "Relationships",
         "line": "People come first. I care about doing right by them, and I'm happiest doing things with other people."
       },
       "rest": [
-        { "name": "Freedom", "line": "To say what I want and do what I want, when I want." },
-        { "name": "Health", "line": "Mentally and physically." },
-        { "name": "Respect", "line": "For all people." },
-        { "name": "Confidence", "line": "In every situation." },
-        { "name": "Bravery", "line": "Always." },
-        { "name": "Resilience", "line": "To push through whenever it's needed." }
+        {
+          "name": "Freedom",
+          "line": "To say what I want and do what I want, when I want."
+        },
+        {
+          "name": "Health",
+          "line": "Mentally and physically."
+        },
+        {
+          "name": "Respect",
+          "line": "For all people."
+        },
+        {
+          "name": "Confidence",
+          "line": "In every situation."
+        },
+        {
+          "name": "Bravery",
+          "line": "Always."
+        },
+        {
+          "name": "Resilience",
+          "line": "To push through whenever it's needed."
+        }
       ],
-      "rule": "Every opportunity I assess, I check against my values and my big goals, and make sure it's aligned with both.",
       "wallNote": "There's a note on my wall that says retire by 30. Underneath it: true retirement is when you stop sacrificing today for tomorrow."
     }
   },
@@ -140,7 +158,7 @@
       {
         "heading": "What I'm learning",
         "paragraphs": [
-          "How owners actually buy. It's trust, not the cheaper install. I'm also still keeping tabs on Finsight, and still looking for the next mountain."
+          "How owners actually buy. Sourcing and closing real business deals through building relationships. Also how a fast-moving, exciting company functions."
         ]
       }
     ],
@@ -148,13 +166,13 @@
   },
   "contact": {
     "title": "Contact",
-    "description": "Email or LinkedIn are the two doors. Home-service owners can book time with Roanin directly.",
-    "body": "Two doors: email and LinkedIn. If you run a home-service business and want to see Avoca, you can book time with me directly."
+    "description": "Email or LinkedIn to reach Roanin Podkin. Home-service owners can book time directly.",
+    "body": "Email and LinkedIn are the easiest ways to reach me. If you run a home-service business and want to see Avoca, book time with me directly."
   },
   "logbook": {
     "title": "Logbook",
     "description": "Everywhere the photos were taken, on one map.",
-    "lede": "Everywhere the photos were taken. Tap a pin."
+    "lede": "Tap a pin."
   },
   "seo": {
     "homeTitle": "Roanin Podkin — Sales at Avoca, Santa Barbara",

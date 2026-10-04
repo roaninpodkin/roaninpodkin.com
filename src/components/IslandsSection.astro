@@ -13,7 +13,6 @@ import { href } from '../lib/url';
 interface Props {
   stories: CollectionEntry<'stories'>[];
   id?: string;
-  depth?: number;
   label?: string;
   heading: string;
   lede?: string;
@@ -24,7 +23,6 @@ interface Props {
 const {
   stories,
   id = 'islands',
-  depth = 10,
   label = 'The islands',
   heading,
   lede,
@@ -39,16 +37,20 @@ const rendered = await Promise.all(
   ordered.map(async (s) => ({ s, Content: (await render(s)).Content })),
 );
 const pad = (n: number) => String(n).padStart(2, '0');
+const meta = (...parts: (string | undefined)[]) => parts.filter((p) => p && p.trim()).join(' · ');
 const Heading = asPage ? 'h1' : 'h2';
 ---
 
 <section
   id={id}
-  data-depth={depth}
   data-label={label}
   class={`relative overflow-hidden bg-[linear-gradient(to_bottom,#2f6482,#1c4570)] text-foam ${cls}`}
 >
   <WaterCanvas />
+  <div
+    class="pointer-events-none absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-abyss/50 to-transparent"
+    aria-hidden="true"
+  ></div>
   <div class="wrap relative pt-28 pb-24 md:pt-32 md:pb-28">
     <div class="reveal max-w-2xl">
       {asPage && <p class="eyebrow text-tan">Stories</p>}
@@ -65,8 +67,8 @@ const Heading = asPage ? 'h1' : 'h2';
   <!-- Story bodies, hidden until an island is opened. Also what search engines read. -->
   <div hidden>
     {rendered.map(({ s, Content }, i) => {
-      const { title, place, dateLabel, excerpt, cover, coverAlt, quest } = s.data;
-      const eyebrow = `${quest ? 'Side quests' : `Island ${pad(i + 1)}`} · ${place} · ${dateLabel}`;
+      const { title, place, dateLabel, excerpt, showExcerpt, cover, coverAlt, quest } = s.data;
+      const eyebrow = meta(quest ? 'Side quests' : `Island ${pad(i + 1)}`, place, dateLabel);
       return (
         <article
           data-story={s.id}
@@ -76,9 +78,11 @@ const Heading = asPage ? 'h1' : 'h2';
         >
           <header class="px-6 pt-8 md:px-10">
             <h2 class="font-display text-[clamp(2.2rem,4vw,3.4rem)] leading-[1.02]">{title}</h2>
-            <p class="mt-3 font-display text-xl leading-snug text-sea-600 italic md:text-2xl">
-              {excerpt}
-            </p>
+            {showExcerpt && (
+              <p class="mt-3 font-display text-xl leading-snug text-sea-600 italic md:text-2xl">
+                {excerpt}
+              </p>
+            )}
           </header>
           {cover && (
             <figure class="px-6 pt-6 md:px-10">
@@ -87,11 +91,12 @@ const Heading = asPage ? 'h1' : 'h2';
                 alt={coverAlt ?? title}
                 widths={[480, 760, 1140]}
                 sizes="(min-width: 768px) 580px, 92vw"
+                quality={72}
                 layout="none"
                 class="max-h-[62vh] w-full rounded-2xl object-cover object-[50%_30%] ring-1 ring-ink/10"
                 loading="lazy"
               />
-              {coverAlt && <figcaption class="eyebrow mt-2 text-ink/50">{coverAlt}</figcaption>}
+              {coverAlt && <figcaption class="eyebrow mt-2 text-tan-deep">{coverAlt}</figcaption>}
             </figure>
           )}
           <div class="prose prose-sand px-6 pt-6 pb-10 md:px-10 prose-headings:font-display prose-p:leading-[1.7]">

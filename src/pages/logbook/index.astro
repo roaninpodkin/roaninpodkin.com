@@ -20,7 +20,6 @@ const pins = albums
     coords: a.data.coords!,
     count: a.data.photos.length,
   }));
-const total = albums.reduce((n, a) => n + a.data.photos.length, 0);
 const crumbs = {
   '@type': 'BreadcrumbList',
   itemListElement: [
@@ -43,9 +42,7 @@ const crumbs = {
       <h1 class="mt-3 font-display text-[clamp(2.8rem,6vw,5.2rem)] leading-[1.02]">
         {copy.logbook.title}
       </h1>
-      <p class="mt-5 max-w-2xl text-lg text-foam/75 md:text-xl">
-        {copy.logbook.lede} {pins.length} places, {total} photos.
-      </p>
+      <p class="mt-5 max-w-2xl text-lg text-foam/75 md:text-xl">{copy.logbook.lede}</p>
       <div class="reveal mt-10 rounded-[1.5rem] bg-sea-700/40 p-3 ring-1 ring-white/10 md:p-6">
         <WorldMap pins={pins} />
       </div>

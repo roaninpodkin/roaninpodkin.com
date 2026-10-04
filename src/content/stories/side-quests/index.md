@@ -3,15 +3,17 @@ title: Side Quests
 place: Here and there
 dateLabel: Ongoing
 date: 2026-08-29
-excerpt: The smaller stories. A seasoning business, a 14er, a lost city, the Alps.
+excerpt: The smaller stories.
 order: 99
 quest: true
 cover: ../../logbook/bierstadt-aug-2026/00-summit-crew.jpg
-coverAlt: Mt Bierstadt, 14,065 feet, with the crew I climbed it with.
+coverAlt: Mt Bierstadt, 14,065 feet. The crew I climbed it with.
 chart: { x: 830, y: 450, r: 46, seed: 97, kind: quests, labelAt: t }
 ---
 
-Not every story is a chapter. These are the side quests.
+## Mt Bierstadt
+
+On August 28, 2026, I sat down with [Dennis Yu](https://dennisyu.com/) in Broomfield, Colorado, and recorded what I called episode one. We were there because [Jason Amato](https://jasongamato.com/) had put a workshop together for home-service operators. By the end of it, seven of them had booked a demo. The next morning we hiked Mt Bierstadt, 14,065 feet. That night Dennis and I talked at Denver airport until my 7:20 flight.
 
 ## Shaka Spice
 
@@ -19,10 +21,6 @@ My mom had a seasoning blend recipe that was too good to stay in the kitchen, so
 
 ![Holding a jar of Shaka Spice](../../logbook/santa-barbara/shaka-spice.jpg)
 *Shaka Spice.*
-
-## Mt Bierstadt
-
-On August 28, 2026, I sat down with [Dennis Yu](https://dennisyu.com/) in Broomfield, Colorado, and recorded what I called episode one. We were there because [Jason Amato](https://jasongamato.com/) had put a workshop together for home-service operators. By the end of it, seven of them had booked a demo. The next morning we hiked Mt Bierstadt, 14,065 feet. That night Dennis and I talked at Denver airport until my 7:20 flight.
 
 ## Teyuna
 

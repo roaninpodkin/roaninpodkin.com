@@ -34,7 +34,6 @@ const stop = (id: string) => DIVE.find((d) => d.id === id)!;
   <!-- 0 m · Surface -->
   <section
     id="surface"
-    data-depth="0"
     data-label={stop('surface').label}
     class="relative bg-[linear-gradient(to_bottom,#fbfdfe,#e8f1f4)] text-ink"
   >
@@ -46,6 +45,7 @@ const stop = (id: string) => DIVE.find((d) => d.id === id)!;
           alt="Roanin Podkin grinning with his arms out on an old castle wall"
           widths={[640, 960, 1400]}
           sizes="(min-width: 768px) 50vw, 100vw"
+          quality={72}
           layout="none"
           class="absolute inset-0 h-full w-full object-cover object-[50%_28%]"
           loading="eager"
@@ -98,7 +98,6 @@ const stop = (id: string) => DIVE.find((d) => d.id === id)!;
   <IslandsSection
     stories={stories}
     id="islands"
-    depth={10}
     label={stop('islands').label}
     heading={islands.heading}
     lede={islands.lede}
@@ -107,12 +106,11 @@ const stop = (id: string) => DIVE.find((d) => d.id === id)!;
   <!-- 24 m · Now -->
   <section
     id="now"
-    data-depth="24"
     data-label={stop('now').label}
     class="relative overflow-hidden bg-[linear-gradient(to_bottom,#1c4570,var(--color-sea-700))] pt-24 pb-28 text-foam md:pt-32"
   >
     <div class="wrap">
-      <SectionHead eyebrow="24 m · Now" heading={now.heading} />
+      <SectionHead eyebrow="Now" heading={now.heading} />
 
       <div class="reveal mt-12 grid gap-10 rounded-[2rem] bg-white/[0.04] p-7 ring-1 ring-white/10 md:p-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
         <div>
@@ -176,12 +174,11 @@ const stop = (id: string) => DIVE.find((d) => d.id === id)!;
   <!-- 32 m · What people say -->
   <section
     id="voices"
-    data-depth="32"
     data-label={stop('voices').label}
     class="relative bg-sea-700 pt-8 pb-28 text-foam"
   >
     <div class="wrap">
-      <SectionHead eyebrow="32 m" heading={testimonials.heading} lede={testimonials.lede} />
+      <SectionHead heading={testimonials.heading} lede={testimonials.lede} />
       <div class="mt-12 grid gap-6 lg:grid-cols-3">
         {testimonials.items.map((t, i) => (
           <figure
@@ -224,7 +221,6 @@ const stop = (id: string) => DIVE.find((d) => d.id === id)!;
   <!-- 40 m · The floor -->
   <section
     id="floor"
-    data-depth="40"
     data-label={stop('floor').label}
     class="relative flex min-h-[100svh] flex-col justify-end overflow-hidden text-foam"
   >
@@ -233,6 +229,7 @@ const stop = (id: string) => DIVE.find((d) => d.id === id)!;
       alt="Roanin underwater, shaka up, beside two whale sharks"
       widths={[800, 1200, 1800, 2400]}
       sizes="100vw"
+      quality={72}
       layout="none"
       class="absolute inset-0 h-full w-full object-cover object-[55%_60%]"
       loading="lazy"
@@ -243,7 +240,7 @@ const stop = (id: string) => DIVE.find((d) => d.id === id)!;
     ></div>
     <div class="wrap relative pt-[55svh] pb-8">
       <div class="reveal max-w-3xl">
-        <p class="eyebrow text-tan">40 m · {floor.heading}</p>
+        <p class="eyebrow text-tan">{floor.heading}</p>
         <p class="mt-5 font-display text-[clamp(2rem,4.6vw,4rem)] leading-[1.08]">{floor.line}</p>
         <div class="mt-9 flex flex-wrap gap-3">
           <a href={`mailto:${SITE.email}`} class="btn btn-foam text-base">

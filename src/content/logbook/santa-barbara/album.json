@@ -29,6 +29,12 @@
       "src": "./avoca-september.jpg",
       "alt": "Roanin in a chef hat holding up one finger in front of an Avoca West neon sign",
       "caption": "Number one rep in sales-qualified opps, September 2026."
+    },
+    {
+      "kind": "image",
+      "src": "./sunset.jpg",
+      "alt": "A sunset over the ocean off Santa Barbara, a sliver of moon above the clouds",
+      "caption": "A sunset on the ocean."
     }
   ]
 }

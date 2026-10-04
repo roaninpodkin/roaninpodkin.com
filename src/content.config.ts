@@ -16,6 +16,8 @@ const stories = defineCollection({
       dateLabel: z.string(),
       date: z.coerce.date(),
       excerpt: z.string(),
+      /** Show the excerpt under the title in the reader and on the story page. */
+      showExcerpt: z.boolean().default(true),
       /** Position in the chain. Side quests sit outside the chain. */
       order: z.number(),
       quest: z.boolean().default(false),

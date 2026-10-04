@@ -46,7 +46,7 @@ const person = {
   '@id': `${SITE.url}/#person`,
   name: SITE.name,
   url: SITE.url,
-  image: new URL('/og-default.png', SITE.url).href,
+  image: new URL('/roanin.jpg', SITE.url).href,
   email: `mailto:${SITE.email}`,
   jobTitle: SITE.jobTitle,
   worksFor: { '@type': 'Organization', name: SITE.employer, url: SITE.avoca },
@@ -100,4 +100,8 @@ const graph = { '@context': 'https://schema.org', '@graph': [person, website, ..
 <meta name="twitter:image" content={imageURL} />
 <meta name="twitter:image:alt" content={imageAlt} />
 
-<script type="application/ld+json" is:inline set:html={JSON.stringify(graph)} />
+<script
+  type="application/ld+json"
+  is:inline
+  set:html={JSON.stringify(graph).replace(/</g, '\u003c')}
+/>

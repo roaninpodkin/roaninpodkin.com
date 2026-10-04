@@ -16,7 +16,7 @@ export default defineConfig({
   compressHTML: true,
   prefetch: {
     prefetchAll: true,
-    defaultStrategy: 'viewport',
+    defaultStrategy: 'hover',
   },
   build: {
     // Inline small stylesheets to avoid render-blocking requests.

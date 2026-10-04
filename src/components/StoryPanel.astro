@@ -21,7 +21,7 @@
         <button
           type="button"
           data-panel-prev
-          class="btn btn-ghost px-3 py-1.5"
+          class="btn btn-ghost px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-35"
           aria-label="Previous island"
         >
           ←
@@ -29,7 +29,7 @@
         <button
           type="button"
           data-panel-next
-          class="btn btn-ghost px-3 py-1.5"
+          class="btn btn-ghost px-3 py-1.5 disabled:cursor-not-allowed disabled:opacity-35"
           aria-label="Next island"
         >
           →
@@ -48,7 +48,7 @@
       <a data-panel-link href="#" class="link text-sea-600">
         Open as its own page
       </a>
-      <span class="text-ink/50" data-panel-count></span>
+      <span class="text-ink/70" data-panel-count></span>
     </div>
   </div>
 </dialog>
@@ -103,6 +103,8 @@
         a.dataset.quest === 'true' ? 'Side quests' : `Island ${i + 1} of ${chainLen}`;
       prevBtn.disabled = i === 0;
       nextBtn.disabled = i === articles.length - 1;
+      if ((document.activeElement as HTMLButtonElement | null)?.disabled)
+        body.focus({ preventScroll: true });
       // Hidden-section images are lazy; now that they're visible, let them load.
       body.querySelectorAll('img[loading="lazy"]').forEach((img) => img.removeAttribute('loading'));
       const url = new URL(location.href);

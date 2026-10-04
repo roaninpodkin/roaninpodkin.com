@@ -17,18 +17,6 @@
       "src": "./eagle-scout.jpg",
       "alt": "Roanin in his Scout uniform with his parents at his Eagle Scout ceremony",
       "caption": "Eagle Scout, with my parents."
-    },
-    {
-      "kind": "image",
-      "src": "./sixteen-before.jpg",
-      "alt": "Roanin at fifteen in the family kitchen",
-      "caption": "Fifteen."
-    },
-    {
-      "kind": "image",
-      "src": "./sixteen-after.jpg",
-      "alt": "Roanin at sixteen, one year later, same kitchen",
-      "caption": "Sixteen. One year of taking health seriously."
     }
   ]
 }

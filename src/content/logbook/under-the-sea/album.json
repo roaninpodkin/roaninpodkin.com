@@ -1,20 +1,14 @@
 {
-  "title": "Somewhere out there",
+  "title": "Under the sea",
   "date": "Summer 2025",
   "sortDate": "2025-07-01",
-  "caption": "Two I didn't write the place down for.",
+  "caption": "Freediving. I don't remember exactly where.",
   "photos": [
     {
       "kind": "image",
       "src": "./freediving.jpg",
       "alt": "Roanin freediving, lying back over a coral reef with fins on",
       "caption": "Under the sea."
-    },
-    {
-      "kind": "image",
-      "src": "./sunset.jpg",
-      "alt": "A sunset over the ocean",
-      "caption": "A sunset on the ocean."
     }
   ]
 }

@@ -1,76 +1,50 @@
 ---
 /**
- * The home page nav is a dive gauge on the right: a small diver slides down a
- * rail as you scroll and the metre reading counts one metre at a time.
+ * Section rail for the home page: a dot per stop with its label, on the right.
+ * The active stop follows the scroll. On phones it's a small pill that opens
+ * the same list.
  */
 interface Stop {
   id: string;
-  depth: number;
   label: string;
 }
 interface Props {
   stops: readonly Stop[];
 }
 const { stops } = Astro.props;
-const max = stops[stops.length - 1].depth;
 ---
 
-<nav aria-label="Depth" class="diver-gauge text-foam" data-diver-gauge data-max={max}>
-  <!-- Desktop rail -->
-  <div
-    class="pointer-events-none fixed top-1/2 right-5 z-40 hidden h-[60vh] w-40 -translate-y-1/2 lg:block xl:right-8"
+<nav aria-label="Sections" class="section-rail text-foam" data-section-rail>
+  <ol
+    class="fixed top-1/2 right-5 z-40 hidden -translate-y-1/2 flex-col gap-5 lg:flex xl:right-8"
     data-rail
   >
-    <div class="absolute inset-y-0 right-[11px] w-px bg-foam/35"></div>
-    <ol class="absolute inset-0">
-      {stops.map((s) => (
-        <li class="absolute right-0 -translate-y-1/2" style={`top:${(s.depth / max) * 100}%`}>
-          <a
-            href={`#${s.id}`}
-            data-stop={s.id}
-            class="group pointer-events-auto flex items-center gap-3 py-2 pl-6"
-          >
-            <span class="eyebrow translate-x-1 whitespace-nowrap opacity-0 drop-shadow transition group-hover:translate-x-0 group-hover:opacity-100 group-focus-visible:opacity-100 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-80">
-              {s.label}
-            </span>
-            <span class="h-[7px] w-[7px] rounded-full bg-foam/55 transition group-hover:bg-foam group-[.is-active]:bg-foam group-[.is-active]:shadow-[0_0_0_4px_rgba(246,249,250,0.18)]" />
-          </a>
-        </li>
-      ))}
-    </ol>
-    <div class="absolute right-[-3px] -translate-y-1/2" data-diver style="top:0%">
-      <div class="absolute -top-8 right-1 font-display text-2xl whitespace-nowrap tabular-nums drop-shadow">
-        <span data-depth-value>0</span> m
-      </div>
-      <svg
-        class="h-10 w-7 drop-shadow"
-        viewBox="0 0 28 40"
-        aria-hidden="true"
-        fill="none"
-        stroke="currentColor"
-      >
-        <!-- a small diver, head down -->
-        <path d="M14 11v15" stroke-width="4.5" stroke-linecap="round"></path>
-        <path d="M14 24l-5.5 10M14 24l5.5 10" stroke-width="2.4" stroke-linecap="round"></path>
-        <path d="M14 12l-4.5-8M14 12l4.5-8" stroke-width="3" stroke-linecap="round"></path>
-        <path d="M9.5 4l-3.5-3M18.5 4l3.5-3" stroke-width="3.5" stroke-linecap="round"></path>
-        <circle cx="14" cy="31" r="3.6" fill="currentColor" stroke="none"></circle>
-      </svg>
-    </div>
-  </div>
+    {stops.map((s) => (
+      <li>
+        <a
+          href={`#${s.id}`}
+          data-stop={s.id}
+          class="group flex items-center justify-end gap-3 py-1"
+        >
+          <span class="eyebrow whitespace-nowrap opacity-45 drop-shadow transition group-hover:opacity-100 group-[.is-active]:opacity-100">
+            {s.label}
+          </span>
+          <span class="h-[7px] w-[7px] shrink-0 rounded-full bg-foam/45 drop-shadow transition group-hover:bg-foam group-[.is-active]:bg-foam group-[.is-active]:shadow-[0_0_0_4px_rgba(246,249,250,0.18)]" />
+        </a>
+      </li>
+    ))}
+  </ol>
 
-  <!-- Phones: a small pill, bottom right -->
   <details class="fixed right-4 bottom-4 z-40 lg:hidden">
-    <summary class="flex cursor-pointer list-none items-center gap-2 rounded-full bg-ink/90 py-2 pr-4 pl-3 shadow-xl ring-1 ring-white/10 backdrop-blur select-none">
-      <svg class="h-6 w-4" viewBox="0 0 28 40" aria-hidden="true" fill="none" stroke="currentColor">
-        <path d="M14 11v15" stroke-width="4.5" stroke-linecap="round"></path>
-        <path d="M14 24l-5.5 10M14 24l5.5 10" stroke-width="2.4" stroke-linecap="round"></path>
-        <path d="M14 12l-4.5-8M14 12l4.5-8" stroke-width="3" stroke-linecap="round"></path>
-        <circle cx="14" cy="31" r="3.6" fill="currentColor" stroke="none"></circle>
+    <summary
+      class="flex cursor-pointer list-none items-center gap-2 rounded-full bg-ink/90 px-4 py-2 text-sm shadow-xl ring-1 ring-white/10 backdrop-blur select-none"
+      aria-label="Jump to a section"
+    >
+      <span class="h-[7px] w-[7px] rounded-full bg-foam" aria-hidden="true"></span>
+      <span data-rail-label>{stops[0].label}</span>
+      <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" class="opacity-60">
+        <path d="M2 7.5 6 3.5l4 4" fill="none" stroke="currentColor" stroke-width="1.5"></path>
       </svg>
-      <span class="font-display text-lg tabular-nums">
-        <span data-depth-value>0</span> m
-      </span>
     </summary>
     <ol class="absolute right-0 bottom-12 w-56 rounded-2xl bg-ink/95 p-2 text-foam shadow-2xl ring-1 ring-white/10">
       {stops.map((s) => (
@@ -78,10 +52,9 @@ const max = stops[stops.length - 1].depth;
           <a
             href={`#${s.id}`}
             data-stop={s.id}
-            class="flex items-center justify-between rounded-xl px-3 py-2 hover:bg-white/10 [&.is-active]:bg-white/10"
+            class="block rounded-xl px-3 py-2 hover:bg-white/10 [&.is-active]:bg-white/10"
           >
-            <span>{s.label}</span>
-            <span class="font-display text-foam/70 tabular-nums">{s.depth} m</span>
+            {s.label}
           </a>
         </li>
       ))}
@@ -90,89 +63,36 @@ const max = stops[stops.length - 1].depth;
 </nav>
 
 <script>
-  const gauge = document.querySelector<HTMLElement>('[data-diver-gauge]');
-  if (gauge) {
-    const max = Number(gauge.dataset.max ?? 40);
-    const stopLinks = Array.from(gauge.querySelectorAll<HTMLAnchorElement>('[data-stop]'));
-    const ids = Array.from(new Set(stopLinks.map((a) => a.dataset.stop!)));
+  const rail = document.querySelector<HTMLElement>('[data-section-rail]');
+  if (rail) {
+    const links = Array.from(rail.querySelectorAll<HTMLAnchorElement>('[data-stop]'));
+    const ids = Array.from(new Set(links.map((a) => a.dataset.stop!)));
     const sections = ids
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
-    const depths = sections.map((s) => Number(s.dataset.depth ?? 0));
-    const values = gauge.querySelectorAll<HTMLElement>('[data-depth-value]');
-    const diver = gauge.querySelector<HTMLElement>('[data-diver]');
-    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    let target = 0;
-    let shown = 0;
-    let active = 0;
-    let counting = 0;
-    let last = 0;
-
-    const paint = () => {
-      const text = String(shown);
-      values.forEach((v) => {
-        if (v.textContent !== text) v.textContent = text;
-      });
-      if (diver) diver.style.top = `${(shown / max) * 100}%`;
-    };
-
-    // Count one metre at a time, like a gauge settling. Time-based, so a slow
-    // frame takes several steps instead of falling behind.
-    const STEP_MS = 24;
-    const count = (ts: number) => {
-      if (shown === target) {
-        counting = 0;
-        return;
-      }
-      if (!last) last = ts;
-      const steps = Math.floor((ts - last) / STEP_MS);
-      if (steps > 0) {
-        const gap = target - shown;
-        shown += Math.sign(gap) * Math.min(Math.abs(gap), steps);
-        last = ts;
-        paint();
-      }
-      counting = requestAnimationFrame(count);
-    };
-
-    const measure = () => {
-      const y = window.scrollY;
-      const probe = y + window.innerHeight * 0.4;
-      const tops = sections.map((s) => s.getBoundingClientRect().top + y);
-      active = 0;
-      for (let i = 0; i < sections.length; i++) if (probe >= tops[i]) active = i;
-      let di = 0;
-      for (let i = 0; i < sections.length; i++) if (y >= tops[i] - 1) di = i;
-      const end = tops[di + 1] ?? document.documentElement.scrollHeight - window.innerHeight;
-      const t = Math.min(1, Math.max(0, (y - tops[di]) / Math.max(1, end - tops[di])));
-      const next = depths[di + 1] ?? depths[di];
-      target = Math.round(depths[di] + (next - depths[di]) * t);
-      stopLinks.forEach((a) => a.classList.toggle('is-active', a.dataset.stop === ids[active]));
-      if (reduce) {
-        shown = target;
-        paint();
-      } else if (!counting) {
-        last = 0;
-        counting = requestAnimationFrame(count);
-      }
-    };
+    const labelEl = rail.querySelector<HTMLElement>('[data-rail-label]');
 
     let ticking = false;
+    const measure = () => {
+      ticking = false;
+      const probe = window.scrollY + window.innerHeight * 0.4;
+      let active = 0;
+      sections.forEach((s, i) => {
+        if (probe >= s.getBoundingClientRect().top + window.scrollY) active = i;
+      });
+      links.forEach((a) => a.classList.toggle('is-active', a.dataset.stop === ids[active]));
+      if (labelEl) labelEl.textContent = sections[active]?.dataset.label ?? '';
+    };
     const onScroll = () => {
       if (!ticking) {
         ticking = true;
-        requestAnimationFrame(() => {
-          ticking = false;
-          measure();
-        });
+        requestAnimationFrame(measure);
       }
     };
     addEventListener('scroll', onScroll, { passive: true });
     addEventListener('resize', onScroll);
     measure();
-
-    gauge
+    rail
       .querySelectorAll('details a')
       .forEach((a) =>
         a.addEventListener('click', () => a.closest('details')?.removeAttribute('open')),

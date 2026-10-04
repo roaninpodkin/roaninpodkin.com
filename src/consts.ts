@@ -24,11 +24,11 @@ export const NAV = [
   { label: 'About', path: '/about/' },
 ] as const;
 
-/** The home page is one dive. Each stop is a section id, its depth in metres, and a label. */
+/** The home page sections, top to bottom. */
 export const DIVE = [
-  { id: 'surface', depth: 0, label: 'Surface' },
-  { id: 'islands', depth: 10, label: 'The islands' },
-  { id: 'now', depth: 24, label: 'Now' },
-  { id: 'voices', depth: 32, label: 'What people say' },
-  { id: 'floor', depth: 40, label: 'The floor' },
+  { id: 'surface', label: 'Surface' },
+  { id: 'islands', label: 'The islands' },
+  { id: 'now', label: 'Now' },
+  { id: 'voices', label: 'What people say' },
+  { id: 'floor', label: 'The floor' },
 ] as const;

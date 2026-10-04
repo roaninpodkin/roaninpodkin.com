@@ -12,7 +12,9 @@ interface Props {
 const { class: cls = '' } = Astro.props;
 ---
 
-<canvas data-water class={`absolute inset-0 h-full w-full ${cls}`} aria-hidden="true"></canvas>
+<div class={`pointer-events-none absolute inset-0 overflow-hidden ${cls}`} aria-hidden="true">
+  <canvas data-water class="sticky top-0 h-[100svh] w-full"></canvas>
+</div>
 
 <script>
   const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
@@ -71,7 +73,7 @@ gl_FragColor=vec4(col,1.);}`;
     const uM = gl.getUniformLocation(prog, 'm');
 
     // Render at ~60% of device pixels: plenty for soft water, cheap on phones.
-    const scale = Math.min(devicePixelRatio || 1, 2) * 0.6;
+    const scale = Math.min(devicePixelRatio || 1, 2) * (innerWidth < 768 ? 0.45 : 0.6);
     const resize = () => {
       const w = Math.max(1, Math.round(canvas.clientWidth * scale));
       const h = Math.max(1, Math.round(canvas.clientHeight * scale));
@@ -86,7 +88,7 @@ gl_FragColor=vec4(col,1.);}`;
     let my = 0.35;
     let tx = mx;
     let ty = my;
-    const host = canvas.parentElement ?? canvas;
+    const host = canvas.closest('section') ?? canvas.parentElement ?? canvas;
     host.addEventListener(
       'pointermove',
       (e) => {

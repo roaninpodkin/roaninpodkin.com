@@ -30,7 +30,7 @@ const crumbs = {
       <div>
         <p class="eyebrow text-tan-deep">About</p>
         <h1 class="mt-3 font-display text-[clamp(2.8rem,6vw,5.2rem)] leading-[1.02]">
-          {about.title}
+          About Roanin Podkin
         </h1>
 
         <div class="prose prose-sand prose-lg mt-12 max-w-[68ch] prose-headings:font-display prose-p:leading-[1.75]">
@@ -49,10 +49,11 @@ const crumbs = {
           aria-labelledby="values"
         >
           <p class="eyebrow text-tan">{about.values.heading}</p>
-          <p id="values" class="mt-3 max-w-xl font-display text-2xl leading-snug">
-            {about.values.intro}
+          <p id="values" class="mt-3 max-w-2xl font-display text-2xl leading-snug">
+            {about.values.rule}
           </p>
-          <div class="mt-8 grid gap-8 md:grid-cols-[1fr_1.4fr]">
+          <p class="mt-6 text-sm text-foam/70">{about.values.intro}</p>
+          <div class="mt-4 grid gap-8 md:grid-cols-[1fr_1.4fr]">
             <div class="rounded-2xl bg-white/[0.06] p-6 ring-1 ring-white/10">
               <p class="eyebrow text-tan">First</p>
               <h3 class="mt-2 font-display text-3xl">{about.values.first.name}</h3>
@@ -67,10 +68,7 @@ const crumbs = {
               ))}
             </ul>
           </div>
-          <p class="mt-8 border-l-2 border-tan pl-5 font-display text-xl leading-snug text-sand-100">
-            {about.values.rule}
-          </p>
-          <p class="mt-5 text-sm text-foam/65">{about.values.wallNote}</p>
+          <p class="mt-8 border-t border-foam/15 pt-6 text-foam/80">{about.values.wallNote}</p>
         </section>
 
         <div class="mt-12 flex flex-wrap gap-3">

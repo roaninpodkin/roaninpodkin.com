@@ -54,10 +54,11 @@ A second issue with the same title adds to the same album. Only issues opened by
 
 ## Structure
 
-- `src/pages/index.astro` – the home page, a single "dive" from surface to sea floor. Section stops are defined in `src/consts.ts` (`DIVE`); `DepthGauge.astro` is the nav.
-- `src/content/stories/*.md` – stories; `chart` in the front matter places each island on the sea chart (`SeaChart.astro`).
+- `src/pages/index.astro` – the home page: one dive in five screens (surface → islands → now → what people say → floor). Stops are defined in `src/consts.ts` (`DIVE`); `DiverGauge.astro` is the nav.
+- `src/components/IslandsSection.astro` – live water (`WaterCanvas.astro`, a small WebGL shader), the sea chart (`SeaChart.astro`) and the slide-in reader (`StoryPanel.astro`). Used on the home page and `/stories/`.
+- `src/content/stories/<slug>/index.md` – one folder per story. `order` places it on the chain; `quest: true` makes it the Side Quests island; `chart` positions the island. Photos are ordinary markdown images (relative paths into `src/content/logbook/...`); an italic line right under an image is its caption.
 - `src/content/copy.json` – all other site copy.
-- `src/content/logbook/` – photo albums.
+- `src/content/logbook/<album>/album.json` – photo albums by place. `coords: [lat, lng]` puts a pin on the world map (`WorldMap.astro`, drawn at build time from Natural Earth data).
 - `old-site/` – archive of the previous WordPress site and its DNS records.
 
 ## SEO

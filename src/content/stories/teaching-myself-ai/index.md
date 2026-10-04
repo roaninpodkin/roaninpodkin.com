@@ -3,7 +3,7 @@ title: Teaching myself AI
 place: Santa Barbara, California
 dateLabel: "2025"
 date: 2025-09-01
-excerpt: Hours of videos a day, then agents and automations for real businesses.
+excerpt: Agents and automations for real businesses.
 order: 5
 chart: { x: 540, y: 345, r: 22, seed: 67, labelAt: r }
 ---

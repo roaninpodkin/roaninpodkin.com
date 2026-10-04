@@ -4,13 +4,14 @@
  *
  * Runs in .github/workflows/photos.yml. Reads the issue from environment
  * variables (never from the command line, so issue text can't inject into
- * the shell), downloads each attachment, resizes it, and writes
- * src/content/logbook/<album>/album.json plus the images.
+ * the shell), downloads each GitHub-hosted attachment, resizes it, and
+ * writes src/content/logbook/<album>/album.json plus the images.
  *
  * Issue format (see .github/ISSUE_TEMPLATE/add-photos.md):
- *   Title  → album name (e.g. "Thailand 2025"); a second issue with the
- *            same title adds to the same album.
- *   ## Place / ## Date / ## Caption → optional metadata.
+ *   Title  → album name ("Photos: Thailand 2025" → "Thailand 2025"); a
+ *            second issue with the same title adds to the same album.
+ *   ## Place / ## Date / ## Caption → optional metadata. Place is geocoded
+ *            into a pin on the Logbook map.
  *   Images anywhere in the body → photos, in order. Text on the line
  *   right under an image becomes that photo's caption.
  */
@@ -39,6 +40,11 @@ const fail = (msg) => {
   console.error(`::error::${msg}`);
   process.exit(1);
 };
+const output = async (lines) => {
+  if (process.env.GITHUB_OUTPUT)
+    await writeFile(process.env.GITHUB_OUTPUT, lines.join('\n') + '\n', { flag: 'a' });
+  console.log(lines.join('\n'));
+};
 
 // ---------- parse ----------
 
@@ -52,7 +58,7 @@ const slugify = (s) =>
     .slice(0, 60);
 
 const albumTitle =
-  title.replace(/^(add|new)\s+photos?:?\s*/i, '').trim() || `Photos #${issueNumber}`;
+  title.replace(/^(?:(?:add|new)\s+)?photos?\b:?\s*/i, '').trim() || `Photos #${issueNumber}`;
 const slug = slugify(albumTitle) || `photos-${issueNumber}`;
 
 const section = (name) => {
@@ -76,22 +82,33 @@ let m;
 while ((m = imgRe.exec(body))) {
   const url = m[1] ?? m[2];
   const after = body.slice(m.index + m[0].length).split('\n');
-  // first non-empty line after the image, unless it is another image or a heading
   let caption = '';
   for (const line of after.slice(0, 3)) {
     const t = line.trim();
     if (!t) continue;
     if (/^!\[|^<img|^#{1,3}\s/.test(t)) break;
+    if (/^\(.*\)$/.test(t)) break; // template placeholder, not a caption
     caption = t.replace(/^[-*]\s+/, '');
     break;
   }
   attachments.push({ url, caption });
 }
 if (!attachments.length) fail('No images found in the issue body.');
+const hostOf = (u) => {
+  try {
+    return new URL(u).hostname;
+  } catch {
+    return '';
+  }
+};
+const wanted = attachments.filter((a) => ALLOWED_HOSTS.has(hostOf(a.url)));
 for (const a of attachments) {
-  const host = new URL(a.url).hostname;
-  if (!ALLOWED_HOSTS.has(host)) fail(`Refusing to download from ${host}`);
+  if (!ALLOWED_HOSTS.has(hostOf(a.url)))
+    console.log(
+      `::warning::Skipping image from "${hostOf(a.url)}" (only GitHub attachments are used)`,
+    );
 }
+if (!wanted.length) fail('No GitHub-hosted images found in the issue body.');
 
 // ---------- dates ----------
 
@@ -110,13 +127,14 @@ const LONG = [
   'November',
   'December',
 ];
+const month = (n) => LONG[n - 1]?.slice(0, 3);
 function parseDate(text) {
   const t = text.trim();
   let mm;
-  if ((mm = t.match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?$/)))
+  if ((mm = t.match(/^(\d{4})-(\d{1,2})(?:-(\d{1,2}))?$/)) && month(+mm[2]))
     return {
       sort: `${mm[1]}-${mm[2].padStart(2, '0')}-${(mm[3] ?? '01').padStart(2, '0')}`,
-      label: `${LONG[+mm[2] - 1].slice(0, 3)} ${mm[1]}`,
+      label: `${month(+mm[2])} ${mm[1]}`,
     };
   if ((mm = t.match(/^([a-z]{3,9})\.?\s+(\d{4})$/i))) {
     const i = MONTHS.indexOf(mm[1].slice(0, 3).toLowerCase());
@@ -126,10 +144,10 @@ function parseDate(text) {
         label: `${LONG[i].slice(0, 3)} ${mm[2]}`,
       };
   }
-  if ((mm = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)))
+  if ((mm = t.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)) && month(+mm[1]))
     return {
       sort: `${mm[3]}-${mm[1].padStart(2, '0')}-${mm[2].padStart(2, '0')}`,
-      label: `${LONG[+mm[1] - 1].slice(0, 3)} ${mm[3]}`,
+      label: `${month(+mm[1])} ${mm[3]}`,
     };
   if ((mm = t.match(/^(\d{4})$/))) return { sort: `${mm[1]}-01-01`, label: mm[1] };
   const d = new Date(t);
@@ -148,19 +166,7 @@ const fallback = {
 };
 const date = parsed ?? fallback;
 
-// ---------- download + resize ----------
-
-async function download(url) {
-  const tryFetch = (headers) => fetch(url, { headers, redirect: 'follow' });
-  let res = await tryFetch({ 'User-Agent': 'roaninpodkin-logbook' });
-  if (!res.ok && token)
-    res = await tryFetch({
-      'User-Agent': 'roaninpodkin-logbook',
-      Authorization: `Bearer ${token}`,
-    });
-  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-  return Buffer.from(await res.arrayBuffer());
-}
+// ---------- album ----------
 
 const albumDir = path.join(ROOT, 'src', 'content', 'logbook', slug);
 const albumFile = path.join(albumDir, 'album.json');
@@ -185,8 +191,9 @@ if (album.place && !album.coords) {
     const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(album.place)}`;
     const res = await fetch(url, {
       headers: { 'User-Agent': 'roaninpodkin.com logbook (roaninpodkin@gmail.com)' },
+      signal: AbortSignal.timeout(15_000),
     });
-    const hits = await res.json();
+    const hits = res.ok ? await res.json() : [];
     if (Array.isArray(hits) && hits[0]) {
       album.coords = [
         Number(Number(hits[0].lat).toFixed(4)),
@@ -202,8 +209,23 @@ if (album.place && !album.coords) {
   }
 }
 
-// Dedupe by content hash (the hash is the second part of each file name), so an
-// edited issue that re-triggers the workflow doesn't add the same photo twice.
+// ---------- download + resize ----------
+
+async function download(url) {
+  const tryFetch = (headers) =>
+    fetch(url, { headers, redirect: 'follow', signal: AbortSignal.timeout(20_000) });
+  let res = await tryFetch({ 'User-Agent': 'roaninpodkin-logbook' });
+  if (!res.ok && token)
+    res = await tryFetch({
+      'User-Agent': 'roaninpodkin-logbook',
+      Authorization: `Bearer ${token}`,
+    });
+  if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+  return Buffer.from(await res.arrayBuffer());
+}
+
+// Dedupe by content hash (the second part of each file name), so a re-run or a
+// photo attached twice is only added once.
 const existing = new Set(
   album.photos.map((p) => (p.src.match(/^\.\/\d{3}-([0-9a-f]{8})\.jpg$/) ?? [])[1]).filter(Boolean),
 );
@@ -211,7 +233,7 @@ let n = album.photos.length;
 const added = [];
 const skipped = [];
 
-for (const a of attachments) {
+for (const a of wanted) {
   let buf;
   try {
     buf = await download(a.url);
@@ -220,6 +242,7 @@ for (const a of attachments) {
     continue;
   }
   const hash = createHash('sha1').update(buf).digest('hex').slice(0, 8);
+  if (existing.has(hash)) continue;
   let meta;
   try {
     meta = await sharp(buf).metadata();
@@ -229,36 +252,29 @@ for (const a of attachments) {
   }
   n += 1;
   const file = `${String(n).padStart(3, '0')}-${hash}.jpg`;
-  const rel = `./${file}`;
-  if (existing.has(hash)) {
-    n -= 1;
-    continue;
-  }
   const out = await sharp(buf)
     .rotate() // honour EXIF orientation, then strip it
     .resize({ width: MAX_EDGE, height: MAX_EDGE, fit: 'inside', withoutEnlargement: true })
     .jpeg({ quality: JPEG_QUALITY, mozjpeg: true })
     .toBuffer();
   await writeFile(path.join(albumDir, file), out);
-  const photo = { kind: 'image', src: rel };
+  const photo = { kind: 'image', src: `./${file}` };
   if (a.caption) photo.caption = a.caption;
   photo.alt = a.caption || `${albumTitle}, photo ${n}`;
   album.photos.push(photo);
+  existing.add(hash);
   added.push(`${file} (${meta.width}×${meta.height} → ${Math.round(out.length / 1024)} KB)`);
 }
 
-if (!added.length) fail(`Nothing added. Skipped: ${skipped.join('; ') || 'none'}`);
+if (!added.length && skipped.length) fail(`Nothing added. Skipped: ${skipped.join('; ')}`);
+if (added.length) await writeFile(albumFile, JSON.stringify(album, null, 2) + '\n');
+else console.log('Nothing new: every photo in this issue is already in the album.');
 
-await writeFile(albumFile, JSON.stringify(album, null, 2) + '\n');
-
-const summary = [
+await output([
   `album=${slug}`,
   `title=${album.title}`,
   `added=${added.length}`,
   `skipped=${skipped.length}`,
-].join('\n');
-if (process.env.GITHUB_OUTPUT)
-  await writeFile(process.env.GITHUB_OUTPUT, summary + '\n', { flag: 'a' });
-console.log(summary);
-console.log(added.map((s) => `  + ${s}`).join('\n'));
+]);
+if (added.length) console.log(added.map((s) => `  + ${s}`).join('\n'));
 if (skipped.length) console.log(skipped.map((s) => `  - skipped ${s}`).join('\n'));

@@ -1,12 +1,12 @@
 name: Add photos from issue
 
-# Roanin opens an issue from the GitHub app on his phone, attaches photos,
-# and this turns them into a Logbook album. Only the repository owner's
-# issues are processed; everyone else's are ignored.
+# Roanin opens an issue from the GitHub app on his phone (template "Add photos"),
+# attaches photos, and this turns them into a Logbook album. Only open issues by
+# the repository owner that carry the "photos" label are processed.
 
 on:
   issues:
-    types: [opened, edited, labeled]
+    types: [opened, edited]
 
 permissions:
   contents: write
@@ -22,9 +22,9 @@ jobs:
     if: >-
       github.event.issue.user.login == github.repository_owner &&
       github.event.issue.state == 'open' &&
-      (contains(github.event.issue.labels.*.name, 'photos') ||
-       contains(github.event.issue.title, 'hoto'))
+      contains(github.event.issue.labels.*.name, 'photos')
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
         with:
@@ -48,9 +48,11 @@ jobs:
         run: node scripts/photos-from-issue.mjs
 
       - name: Check the site still builds
+        if: steps.album.outputs.added != '0'
         run: npm run build
 
       - name: Commit
+        if: steps.album.outputs.added != '0'
         run: |
           git config user.name "logbook-bot"
           git config user.email "logbook-bot@users.noreply.github.com"
@@ -60,6 +62,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Deploy
+        if: steps.album.outputs.added != '0'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: gh workflow run deploy.yml --ref main
@@ -72,9 +75,13 @@ jobs:
           ADDED: ${{ steps.album.outputs.added }}
           SKIPPED: ${{ steps.album.outputs.skipped }}
         run: |
-          body="Added $ADDED photo(s) to **$TITLE**."
-          if [ "$SKIPPED" != "0" ]; then body="$body $SKIPPED could not be read and were skipped."; fi
-          body="$body"$'\n\n'"The site is rebuilding now; give it a couple of minutes. Album: \`/logbook/$ALBUM/\`"
+          if [ "$ADDED" = "0" ]; then
+            body="Nothing new here: every photo in this issue is already in **$TITLE**."
+          else
+            body="Added $ADDED photo(s) to **$TITLE**."
+            if [ "$SKIPPED" != "0" ]; then body="$body $SKIPPED could not be read and were skipped."; fi
+            body="$body"$'\n\n'"The site is rebuilding now; give it a couple of minutes. Album: \`/logbook/$ALBUM/\`"
+          fi
           gh issue comment "${{ github.event.issue.number }}" --body "$body"
           gh issue close "${{ github.event.issue.number }}" --reason completed
 
