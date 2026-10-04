@@ -179,7 +179,11 @@ if (dateText || !album.date) album.date = date.label;
 if (dateText) album.sortDate = date.sort;
 if (albumCaption) album.caption = albumCaption;
 
-const existing = new Set(album.photos.map((p) => p.src));
+// Dedupe by content hash (the hash is the second part of each file name), so an
+// edited issue that re-triggers the workflow doesn't add the same photo twice.
+const existing = new Set(
+  album.photos.map((p) => (p.src.match(/^\.\/\d{3}-([0-9a-f]{8})\.jpg$/) ?? [])[1]).filter(Boolean),
+);
 let n = album.photos.length;
 const added = [];
 const skipped = [];
