@@ -1,0 +1,155 @@
+---
+/**
+ * The slide-in reader for island stories. Story content is pre-rendered on
+ * the page in hidden <article data-story> blocks (see IslandsSection); this
+ * dialog shows one at a time with previous/next along the route.
+ */
+---
+
+<dialog
+  id="story-panel"
+  class="story-panel m-0 h-dvh max-h-none w-screen max-w-none bg-transparent p-0 backdrop:bg-abyss/70 backdrop:backdrop-blur-sm"
+  aria-label="Story"
+>
+  <div
+    class="ml-auto flex h-full w-full max-w-[660px] flex-col bg-sand-100 text-ink shadow-2xl"
+    data-sheet
+  >
+    <div class="flex items-center justify-between gap-3 border-b border-ink/10 px-5 py-3">
+      <span class="eyebrow truncate text-tan-deep" data-panel-eyebrow></span>
+      <div class="flex shrink-0 items-center gap-2">
+        <button
+          type="button"
+          data-panel-prev
+          class="btn btn-ghost px-3 py-1.5"
+          aria-label="Previous island"
+        >
+          ←
+        </button>
+        <button
+          type="button"
+          data-panel-next
+          class="btn btn-ghost px-3 py-1.5"
+          aria-label="Next island"
+        >
+          →
+        </button>
+        <button type="button" data-panel-close class="btn btn-ink px-3.5 py-1.5">
+          Close
+        </button>
+      </div>
+    </div>
+    <div
+      class="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+      data-panel-body
+      tabindex="0"
+    ></div>
+    <div class="flex items-center justify-between border-t border-ink/10 px-5 py-3 text-sm">
+      <a data-panel-link href="#" class="link text-sea-600">
+        Open as its own page
+      </a>
+      <span class="text-ink/50" data-panel-count></span>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .story-panel[open] [data-sheet] {
+    animation: slide-in 0.45s var(--ease-soft);
+  }
+  @keyframes slide-in {
+    from {
+      transform: translateX(40px);
+      opacity: 0;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .story-panel[open] [data-sheet] {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  const dialog = document.getElementById('story-panel') as HTMLDialogElement | null;
+  const articles = Array.from(document.querySelectorAll<HTMLElement>('article[data-story]'));
+  if (dialog && articles.length) {
+    const body = dialog.querySelector<HTMLElement>('[data-panel-body]')!;
+    const eyebrow = dialog.querySelector<HTMLElement>('[data-panel-eyebrow]')!;
+    const count = dialog.querySelector<HTMLElement>('[data-panel-count]')!;
+    const link = dialog.querySelector<HTMLAnchorElement>('[data-panel-link]')!;
+    const prevBtn = dialog.querySelector<HTMLButtonElement>('[data-panel-prev]')!;
+    const nextBtn = dialog.querySelector<HTMLButtonElement>('[data-panel-next]')!;
+    const slugs = articles.map((a) => a.dataset.story!);
+    let i = -1;
+    let opener: Element | null = null;
+
+    const show = (n: number) => {
+      i = n;
+      const a = articles[i];
+      body.innerHTML = a.innerHTML;
+      body.scrollTop = 0;
+      requestAnimationFrame(() => {
+        body.scrollTop = 0;
+      });
+      eyebrow.textContent = a.dataset.eyebrow ?? '';
+      link.href = a.dataset.href ?? '#';
+      const chainLen = articles.filter((x) => x.dataset.quest !== 'true').length;
+      count.textContent =
+        a.dataset.quest === 'true' ? 'Side quests' : `Island ${i + 1} of ${chainLen}`;
+      prevBtn.disabled = i === 0;
+      nextBtn.disabled = i === articles.length - 1;
+      // Hidden-section images are lazy; now that they're visible, let them load.
+      body.querySelectorAll('img[loading="lazy"]').forEach((img) => img.removeAttribute('loading'));
+      const url = new URL(location.href);
+      url.searchParams.set('story', slugs[i]);
+      history.replaceState(null, '', url);
+    };
+    const open = (slug: string, from?: Element | null) => {
+      const n = slugs.indexOf(slug);
+      if (n < 0) return false;
+      opener = from ?? null;
+      show(n);
+      if (!dialog.open) dialog.showModal();
+      document.documentElement.style.overflow = 'hidden';
+      body.focus({ preventScroll: true });
+      requestAnimationFrame(() => {
+        body.scrollTop = 0;
+      });
+      return true;
+    };
+    const close = () => dialog.close();
+
+    dialog.addEventListener('close', () => {
+      document.documentElement.style.overflow = '';
+      const url = new URL(location.href);
+      url.searchParams.delete('story');
+      history.replaceState(null, '', url);
+      (opener as HTMLElement | null)?.focus?.();
+    });
+    dialog.addEventListener('click', (e) => {
+      if (e.target === dialog) close();
+    });
+    dialog.querySelector('[data-panel-close]')?.addEventListener('click', close);
+    prevBtn.addEventListener('click', () => i > 0 && show(i - 1));
+    nextBtn.addEventListener('click', () => i < articles.length - 1 && show(i + 1));
+    dialog.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' && i < articles.length - 1) show(i + 1);
+      if (e.key === 'ArrowLeft' && i > 0) show(i - 1);
+    });
+
+    // Upgrade island links into panel openers.
+    document.addEventListener('click', (e) => {
+      const a = (e.target as Element).closest<HTMLAnchorElement>('[data-island]');
+      if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      if (open(a.dataset.island!, a)) e.preventDefault();
+    });
+
+    const wanted = new URL(location.href).searchParams.get('story');
+    if (wanted) open(wanted);
+  }
+</script>

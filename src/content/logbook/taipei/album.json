@@ -1,0 +1,16 @@
+{
+  "title": "Taipei",
+  "place": "Taipei, Taiwan",
+  "coords": [25.033, 121.5654],
+  "date": "Summer 2025",
+  "sortDate": "2025-06-20",
+  "caption": "First stop of two months solo through Asia.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./liberty-square.jpg",
+      "alt": "Roanin with a backpack in front of the Liberty Square gate in Taipei",
+      "caption": "Going on an adventure. First stop."
+    }
+  ]
+}

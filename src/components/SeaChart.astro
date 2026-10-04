@@ -1,55 +1,70 @@
 ---
 /**
- * The stories, drawn as islands on a sea chart. Desktop gets the chart;
- * phones get the same route as a vertical list.
+ * The stories as islands on a sea chart. Islands have shoals, shadows and
+ * a little parallax so the chart reads as something you're looking down into.
+ * Desktop and tablets get the chart; phones get the same route as a list.
+ * Every island is a real link; JS upgrades the click into the story panel.
  */
 import type { CollectionEntry } from 'astro:content';
 import { islandPath, openSpline, soundings, type Pt } from '../lib/chart';
 import { href } from '../lib/url';
 
 interface Props {
-  stories: CollectionEntry<'stories'>[];
-  /** Hide the cartouche (used when the page already has a heading). */
-  bare?: boolean;
+  /** The numbered chain, in order. */
+  chain: CollectionEntry<'stories'>[];
+  /** The side-quests island, drawn off the chain. */
+  quests?: CollectionEntry<'stories'>;
   class?: string;
 }
-const { stories, bare = false, class: cls = '' } = Astro.props;
+const { chain, quests, class: cls = '' } = Astro.props;
 
 const W = 1000;
-const H = 640;
-const route = openSpline(stories.map((s) => [s.data.chart.x, s.data.chart.y] as Pt));
+const H = 620;
+const all = quests ? [...chain, quests] : chain;
+const route = openSpline(chain.map((s) => [s.data.chart.x, s.data.chart.y] as Pt));
 const marks = soundings(
-  34,
+  30,
   7,
   W,
   H,
-  stories.map((s) => ({ x: s.data.chart.x, y: s.data.chart.y, r: s.data.chart.r })),
+  all.map((s) => ({ x: s.data.chart.x, y: s.data.chart.y, r: s.data.chart.r })),
 );
 
-const labelPos = (c: { x: number; y: number; r: number; labelAt: string }) => {
-  const gap = c.r * 1.35 + 10;
+type C = { x: number; y: number; r: number; seed: number; labelAt: string };
+const labelPos = (c: C) => {
+  const gap = c.r * 1.4 + 10;
   switch (c.labelAt) {
     case 'l':
-      return { x: c.x - gap, y: c.y + 6, anchor: 'end' };
+      return { x: c.x - gap, y: c.y + 7, anchor: 'end' };
     case 't':
-      return { x: c.x, y: c.y - gap + 2, anchor: 'middle' };
+      return { x: c.x, y: c.y - gap, anchor: 'middle' };
     case 'b':
-      return { x: c.x, y: c.y + gap + 12, anchor: 'middle' };
+      return { x: c.x, y: c.y + gap + 14, anchor: 'middle' };
     default:
-      return { x: c.x + gap, y: c.y + 6, anchor: 'start' };
+      return { x: c.x + gap, y: c.y + 7, anchor: 'start' };
   }
 };
+const badgePos = (c: C) =>
+  c.labelAt === 't' || c.labelAt === 'b'
+    ? { x: c.x - c.r * 1.5 - 4, y: c.y - c.r * 0.9 }
+    : { x: c.x, y: c.y - c.r * 1.35 - 6 };
 
-const badgePos = (c: { x: number; y: number; r: number; labelAt: string }) =>
-  c.labelAt === 't'
-    ? { x: c.x - c.r * 1.55 - 6, y: c.y - c.r * 0.9 }
-    : { x: c.x, y: c.y - c.r * 1.3 - 6 };
-
+const shapes = (c: C) => ({
+  shadow: islandPath(c.x + 6, c.y + 10, c.r, c.seed, { scale: 1.22, rough: 0.3 }),
+  foam: islandPath(c.x, c.y, c.r, c.seed, { scale: 1.45, rough: 0.3 }),
+  sand: islandPath(c.x, c.y, c.r, c.seed, { scale: 1.22, rough: 0.3 }),
+  land: islandPath(c.x, c.y, c.r, c.seed + 1, { scale: 0.86, rough: 0.5 }),
+  high: islandPath(c.x - c.r * 0.1, c.y - c.r * 0.12, c.r, c.seed + 2, { scale: 0.46, rough: 0.6 }),
+});
+const islets = (c: C) => [
+  { x: c.x - c.r * 1.55, y: c.y + c.r * 0.55, r: c.r * 0.3, seed: c.seed + 11 },
+  { x: c.x + c.r * 1.2, y: c.y - c.r * 0.9, r: c.r * 0.26, seed: c.seed + 13 },
+  { x: c.x + c.r * 1.5, y: c.y + c.r * 0.7, r: c.r * 0.22, seed: c.seed + 17 },
+];
 const pad = (n: number) => String(n).padStart(2, '0');
 ---
 
-<div class={`sea-chart ${cls}`}>
-  <!-- Desktop / tablet: the chart -->
+<div class={`sea-chart ${cls}`} data-chart>
   <svg
     class="hidden w-full md:block"
     viewBox={`0 0 ${W} ${H}`}
@@ -58,54 +73,53 @@ const pad = (n: number) => String(n).padStart(2, '0');
   >
     <title id="chart-title">A chart of Roanin's stories</title>
     <desc id="chart-desc">
-      {stories.length} islands connected by a dotted route, in order:{' '}
-      {stories.map((s) => s.data.title).join(', ')}. Each island links to its story.
+      {chain.length} islands joined by a route, in order:{' '}
+      {chain.map((s) => s.data.title).join(', ')}.
+      {quests && ` Off to the side, ${quests.data.title}.`} Each island links to its story.
     </desc>
-
     <defs>
-      <radialGradient id="shoal-grad" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="var(--color-lagoon)" stop-opacity="0.45"></stop>
-        <stop offset="70%" stop-color="var(--color-lagoon)" stop-opacity="0.12"></stop>
-        <stop offset="100%" stop-color="var(--color-lagoon)" stop-opacity="0"></stop>
+      <radialGradient id="shoal" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#7fd6dc" stop-opacity="0.55"></stop>
+        <stop offset="60%" stop-color="#5cc3cc" stop-opacity="0.18"></stop>
+        <stop offset="100%" stop-color="#5cc3cc" stop-opacity="0"></stop>
       </radialGradient>
+      <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+        <feGaussianBlur stdDeviation="5"></feGaussianBlur>
+      </filter>
+      <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="b"></feGaussianBlur>
+        <feMerge>
+          <feMergeNode in="b"></feMergeNode>
+          <feMergeNode in="SourceGraphic"></feMergeNode>
+        </feMerge>
+      </filter>
       <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
         <path
           d="M50 0H0V50"
           fill="none"
-          stroke="currentColor"
-          stroke-opacity="0.09"
+          stroke="#fff"
+          stroke-opacity="0.07"
           stroke-width="0.6"
         ></path>
       </pattern>
     </defs>
 
-    <!-- Paper: grid and rhumb lines -->
     <rect width={W} height={H} fill="url(#grid)"></rect>
-    <g stroke="currentColor" stroke-opacity="0.07" stroke-width="0.6">
+    <g stroke="#fff" stroke-opacity="0.05" stroke-width="0.6">
       {Array.from({ length: 12 }, (_, i) => {
         const a = (i / 12) * Math.PI;
         const L = 1400;
-        const cx = 905;
-        const cy = 95;
         return (
           <line
-            x1={cx - Math.cos(a) * L}
-            y1={cy - Math.sin(a) * L}
-            x2={cx + Math.cos(a) * L}
-            y2={cy + Math.sin(a) * L}
+            x1={905 - Math.cos(a) * L}
+            y1={95 - Math.sin(a) * L}
+            x2={905 + Math.cos(a) * L}
+            y2={95 + Math.sin(a) * L}
           />
         );
       })}
     </g>
-
-    <!-- Soundings -->
-    <g
-      class="font-display"
-      font-size="11"
-      fill="currentColor"
-      fill-opacity="0.38"
-      font-style="italic"
-    >
+    <g class="font-display" font-size="11" fill="#fff" fill-opacity="0.32" font-style="italic">
       {marks.map((m) => (
         <text x={m.x} y={m.y} text-anchor="middle">
           {m.v}
@@ -113,86 +127,111 @@ const pad = (n: number) => String(n).padStart(2, '0');
       ))}
     </g>
 
-    <!-- Route -->
+    <!-- The route flows like a current -->
     <path
+      class="route"
       d={route}
       fill="none"
       stroke="var(--color-tan)"
-      stroke-width="1.6"
-      stroke-dasharray="1 7"
+      stroke-width="1.8"
+      stroke-dasharray="1 9"
       stroke-linecap="round"
-      opacity="0.9"
+      opacity="0.95"
     ></path>
 
-    <!-- Islands -->
-    {stories.map((s, i) => {
+    {all.map((s, i) => {
       const c = s.data.chart;
+      const isQuests = c.kind === 'quests';
+      const sh = shapes(c);
       const lp = labelPos(c);
       const bp = badgePos(c);
-      const peak = c.kind === 'peak';
-      const atoll = c.kind === 'atoll';
+      const k = (c.r / 4).toFixed(1);
       return (
-        <a
-          href={href(`/stories/${s.id}/`)}
-          class="island"
-          aria-label={`${s.data.title}, ${s.data.place}`}
-        >
-          <circle class="shoal" cx={c.x} cy={c.y} r={c.r * 2.3} fill="url(#shoal-grad)" />
-          <path
-            d={islandPath(c.x, c.y, c.r, c.seed, { scale: 1.22, rough: 0.3 })}
-            fill="var(--color-sand-200)"
-          />
-          <path
-            d={islandPath(c.x, c.y, c.r, c.seed + 1, { scale: 0.86, rough: 0.5 })}
-            fill={peak ? 'var(--color-moss)' : 'var(--color-moss-light)'}
-          />
-          {atoll && (
-            <path
-              d={islandPath(c.x + c.r * 1.6, c.y + c.r * 0.9, c.r * 0.45, c.seed + 9, {
-                scale: 1,
-                rough: 0.5,
-              })}
-              fill="var(--color-sand-200)"
-            />
-          )}
-          {peak && (
-            <path
-              d={`M${c.x - c.r * 0.5} ${c.y + c.r * 0.35} L${c.x} ${c.y - c.r * 0.6} L${c.x + c.r * 0.5} ${c.y + c.r * 0.35} Z`}
-              fill="var(--color-sand-100)"
-              opacity="0.9"
-            />
-          )}
-          <g class="badge">
-            <circle cx={bp.x} cy={bp.y} r="8" fill="var(--color-ink)" />
-            <text
-              x={bp.x}
-              y={bp.y + 3}
-              text-anchor="middle"
-              font-size="8.5"
-              font-weight="600"
-              fill="var(--color-foam)"
-              class="font-sans"
-            >
-              {pad(i + 1)}
-            </text>
+        <g class="island-wrap">
+          <g data-para={(c.r / 8).toFixed(1)}>
+            <path d={sh.shadow} fill="#061430" opacity="0.32" filter="url(#soft)" />
+            {isQuests &&
+              islets(c).map((q) => (
+                <path
+                  d={islandPath(q.x + 4, q.y + 7, q.r, q.seed, { scale: 1.2 })}
+                  fill="#061430"
+                  opacity="0.28"
+                  filter="url(#soft)"
+                />
+              ))}
           </g>
-          <text
-            x={lp.x}
-            y={lp.y}
-            text-anchor={lp.anchor}
-            class="label font-display"
-            font-size="21"
-            font-style="italic"
-            fill="currentColor"
+          <a
+            href={href(`/stories/${s.id}/`)}
+            class="island"
+            data-island={s.id}
+            aria-label={`${s.data.title}, ${s.data.place}`}
           >
-            {s.data.title}
-          </text>
-        </a>
+            <g data-para={k} class="bob" style={`animation-delay:-${(i * 1.3) % 7}s`}>
+              <circle class="shoal" cx={c.x} cy={c.y} r={c.r * 2.4} fill="url(#shoal)" />
+              <path
+                d={sh.foam}
+                fill="none"
+                stroke="#fff"
+                stroke-opacity="0.35"
+                stroke-width="1.2"
+              />
+              <path d={sh.sand} fill="var(--color-sand-200)" />
+              <path d={sh.land} fill="var(--color-moss-light)" />
+              <path d={sh.high} fill="var(--color-moss)" />
+              {isQuests &&
+                islets(c).map((q) => (
+                  <>
+                    <path
+                      d={islandPath(q.x, q.y, q.r, q.seed, { scale: 1.2 })}
+                      fill="var(--color-sand-200)"
+                    />
+                    <path
+                      d={islandPath(q.x, q.y, q.r, q.seed + 1, { scale: 0.8, rough: 0.5 })}
+                      fill="var(--color-moss-light)"
+                    />
+                  </>
+                ))}
+              <g class="badge">
+                <circle cx={bp.x} cy={bp.y} r={isQuests ? 10 : 8.5} fill="var(--color-ink)" />
+                {isQuests ? (
+                  <path
+                    transform={`translate(${bp.x} ${bp.y}) scale(0.62)`}
+                    d="M0-8.5 2.4-2.7 8.5-2.3 3.8 1.7 5.2 7.7 0 4.5-5.2 7.7-3.8 1.7-8.5-2.3-2.4-2.7Z"
+                    fill="var(--color-tan)"
+                  />
+                ) : (
+                  <text
+                    x={bp.x}
+                    y={bp.y + 3}
+                    text-anchor="middle"
+                    font-size="8.5"
+                    font-weight="600"
+                    fill="var(--color-foam)"
+                    class="font-sans"
+                  >
+                    {pad(i + 1)}
+                  </text>
+                )}
+              </g>
+              <text
+                x={lp.x}
+                y={lp.y}
+                text-anchor={lp.anchor}
+                class="label font-display"
+                font-size={isQuests ? 26 : 21}
+                font-style="italic"
+                fill="var(--color-foam)"
+                filter="url(#glow)"
+              >
+                {s.data.title}
+              </text>
+            </g>
+          </a>
+        </g>
       );
     })}
 
-    <!-- Compass rose -->
-    <g transform="translate(905 95)" fill="currentColor" stroke="currentColor" opacity="0.8">
+    <g transform="translate(905 95)" fill="#fff" stroke="#fff" opacity="0.75">
       <circle r="26" fill="none" stroke-opacity="0.35" stroke-width="0.8"></circle>
       <circle r="3" stroke="none"></circle>
       <path d="M0-30 L6 0 L0 30 L-6 0 Z" fill-opacity="0.9" stroke="none"></path>
@@ -201,53 +240,26 @@ const pad = (n: number) => String(n).padStart(2, '0');
         N
       </text>
     </g>
-
-    {!bare && (
-      <g transform="translate(36 36)" fill="currentColor">
-        <rect
-          width="214"
-          height="78"
-          rx="6"
-          fill="var(--color-ink)"
-          fill-opacity="0.35"
-          stroke="currentColor"
-          stroke-opacity="0.35"
-        />
-        <text x="16" y="31" class="font-display" font-size="24">
-          Stories
-        </text>
-        <text
-          x="16"
-          y="52"
-          font-size="11"
-          fill-opacity="0.75"
-          class="font-sans"
-          letter-spacing="1.5"
-        >
-          A CHART OF WHERE I'VE BEEN
-        </text>
-        <line x1="16" y1="64" x2="96" y2="64" stroke="currentColor" stroke-width="1.5" />
-        <line x1="16" y1="60" x2="16" y2="68" stroke="currentColor" />
-        <line x1="96" y1="60" x2="96" y2="68" stroke="currentColor" />
-        <text x="104" y="68" font-size="10" fill-opacity="0.7" class="font-sans">
-          one story
-        </text>
-      </g>
-    )}
   </svg>
 
-  <!-- Phone: the same route as a list -->
-  <ol class="relative ml-5 space-y-10 border-l border-dashed border-current/35 pl-9 md:hidden">
-    {stories.map((s, i) => {
+  <!-- Phones: the same route as a list -->
+  <ol class="relative ml-5 space-y-9 border-l border-dashed border-foam/40 pl-9 md:hidden">
+    {all.map((s, i) => {
       const c = s.data.chart;
+      const isQuests = c.kind === 'quests';
       return (
-        <li class="relative">
+        <li class={`relative ${isQuests ? 'mt-14 border-t border-foam/15 pt-8' : ''}`}>
           <svg
-            class="absolute -left-[3.55rem] top-0 h-11 w-11"
+            class="absolute top-0 -left-[3.55rem] h-11 w-11"
             viewBox="-40 -40 80 80"
             aria-hidden="true"
           >
-            <circle r="34" fill="var(--color-lagoon)" fill-opacity="0.18" />
+            <circle r="34" fill="#5cc3cc" fill-opacity="0.22" />
+            <path
+              d={islandPath(3, 5, 18, c.seed, { scale: 1.25, rough: 0.3 })}
+              fill="#061430"
+              opacity="0.3"
+            />
             <path
               d={islandPath(0, 0, 18, c.seed, { scale: 1.25, rough: 0.3 })}
               fill="var(--color-sand-200)"
@@ -257,14 +269,14 @@ const pad = (n: number) => String(n).padStart(2, '0');
               fill="var(--color-moss-light)"
             />
           </svg>
-          <a href={href(`/stories/${s.id}/`)} class="group block">
-            <p class="eyebrow opacity-70">
-              {pad(i + 1)} · {s.data.place} · {s.data.dateLabel}
+          <a href={href(`/stories/${s.id}/`)} data-island={s.id} class="group block">
+            <p class="eyebrow text-foam/70">
+              {isQuests ? '★' : pad(i + 1)} · {s.data.place} · {s.data.dateLabel}
             </p>
             <h3 class="mt-1 font-display text-3xl leading-tight group-hover:underline group-hover:decoration-tan group-hover:underline-offset-4">
               {s.data.title}
             </h3>
-            <p class="mt-2 text-[0.95rem] leading-relaxed opacity-80">{s.data.excerpt}</p>
+            <p class="mt-2 text-[0.95rem] leading-relaxed text-foam/80">{s.data.excerpt}</p>
           </a>
         </li>
       );
@@ -276,23 +288,21 @@ const pad = (n: number) => String(n).padStart(2, '0');
   .island {
     cursor: pointer;
   }
-  .island .shoal {
-    transition: transform 0.5s var(--ease-soft);
+  .island .shoal,
+  .island .label {
+    transition:
+      transform 0.5s var(--ease-soft),
+      fill 0.2s;
     transform-box: fill-box;
     transform-origin: center;
   }
   .island:hover .shoal,
   .island:focus-visible .shoal {
-    transform: scale(1.18);
-  }
-  .island .label {
-    transition: fill 0.2s;
+    transform: scale(1.15);
   }
   .island:hover .label,
   .island:focus-visible .label {
     fill: var(--color-tan);
-    text-decoration: underline;
-    text-underline-offset: 4px;
   }
   .island:focus-visible {
     outline: none;
@@ -301,7 +311,69 @@ const pad = (n: number) => String(n).padStart(2, '0');
     stroke: var(--color-lagoon);
     stroke-width: 2;
   }
-  .island .badge {
-    opacity: 0.85;
+  .route {
+    animation: flow 2.6s linear infinite;
+  }
+  .bob {
+    animation: bob 7s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+  @keyframes flow {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .route,
+    .bob {
+      animation: none;
+    }
   }
 </style>
+
+<script>
+  // Parallax: islands drift against the pointer, bigger islands more, so the
+  // chart feels like it has depth. Skipped for reduced motion and touch-only.
+  const chart = document.querySelector<HTMLElement>('[data-chart]');
+  if (
+    chart &&
+    !matchMedia('(prefers-reduced-motion: reduce)').matches &&
+    matchMedia('(hover: hover)').matches
+  ) {
+    const layers = Array.from(chart.querySelectorAll<SVGGElement>('[data-para]'));
+    let tx = 0,
+      ty = 0,
+      cx = 0,
+      cy = 0,
+      raf = 0;
+    const step = () => {
+      cx += (tx - cx) * 0.08;
+      cy += (ty - cy) * 0.08;
+      for (const g of layers) {
+        const k = Number(g.dataset.para);
+        g.style.transform = `translate(${(-cx * k).toFixed(2)}px, ${(-cy * k).toFixed(2)}px)`;
+      }
+      raf =
+        Math.abs(tx - cx) > 0.002 || Math.abs(ty - cy) > 0.002 ? requestAnimationFrame(step) : 0;
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(step);
+    };
+    chart.addEventListener(
+      'pointermove',
+      (e) => {
+        const b = chart.getBoundingClientRect();
+        tx = ((e.clientX - b.left) / b.width - 0.5) * 2;
+        ty = ((e.clientY - b.top) / b.height - 0.5) * 2;
+        kick();
+      },
+      { passive: true },
+    );
+    chart.addEventListener('pointerleave', () => {
+      tx = 0;
+      ty = 0;
+      kick();
+    });
+  }
+</script>

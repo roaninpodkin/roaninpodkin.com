@@ -1,0 +1,106 @@
+---
+/**
+ * Water + chart + the pre-rendered stories + the reader panel, as one block.
+ * Used on the home page and on /stories/.
+ */
+import { Image } from 'astro:assets';
+import { render, type CollectionEntry } from 'astro:content';
+import WaterCanvas from './WaterCanvas.astro';
+import SeaChart from './SeaChart.astro';
+import StoryPanel from './StoryPanel.astro';
+import { href } from '../lib/url';
+
+interface Props {
+  stories: CollectionEntry<'stories'>[];
+  id?: string;
+  depth?: number;
+  label?: string;
+  heading: string;
+  lede?: string;
+  /** Render the heading as the page h1 (on /stories/). */
+  asPage?: boolean;
+  class?: string;
+}
+const {
+  stories,
+  id = 'islands',
+  depth = 10,
+  label = 'The islands',
+  heading,
+  lede,
+  asPage = false,
+  class: cls = '',
+} = Astro.props;
+
+const chain = stories.filter((s) => !s.data.quest).sort((a, b) => a.data.order - b.data.order);
+const quests = stories.find((s) => s.data.quest);
+const ordered = quests ? [...chain, quests] : chain;
+const rendered = await Promise.all(
+  ordered.map(async (s) => ({ s, Content: (await render(s)).Content })),
+);
+const pad = (n: number) => String(n).padStart(2, '0');
+const Heading = asPage ? 'h1' : 'h2';
+---
+
+<section
+  id={id}
+  data-depth={depth}
+  data-label={label}
+  class={`relative overflow-hidden bg-[linear-gradient(to_bottom,#2f6482,#1c4570)] text-foam ${cls}`}
+>
+  <WaterCanvas />
+  <div class="wrap relative pt-28 pb-24 md:pt-32 md:pb-28">
+    <div class="reveal max-w-2xl">
+      {asPage && <p class="eyebrow text-tan">Stories</p>}
+      <Heading class="font-display text-[clamp(2.6rem,5.5vw,4.5rem)] leading-[1.02] drop-shadow">
+        {heading}
+      </Heading>
+      {lede && <p class="mt-4 max-w-xl text-lg text-foam/85 drop-shadow md:text-xl">{lede}</p>}
+    </div>
+    <div class="reveal mt-8 md:mt-4">
+      <SeaChart chain={chain} quests={quests} />
+    </div>
+  </div>
+
+  <!-- Story bodies, hidden until an island is opened. Also what search engines read. -->
+  <div hidden>
+    {rendered.map(({ s, Content }, i) => {
+      const { title, place, dateLabel, excerpt, cover, coverAlt, quest } = s.data;
+      const eyebrow = `${quest ? 'Side quests' : `Island ${pad(i + 1)}`} · ${place} · ${dateLabel}`;
+      return (
+        <article
+          data-story={s.id}
+          data-eyebrow={eyebrow}
+          data-href={href(`/stories/${s.id}/`)}
+          data-quest={quest ? 'true' : 'false'}
+        >
+          <header class="px-6 pt-8 md:px-10">
+            <h2 class="font-display text-[clamp(2.2rem,4vw,3.4rem)] leading-[1.02]">{title}</h2>
+            <p class="mt-3 font-display text-xl leading-snug text-sea-600 italic md:text-2xl">
+              {excerpt}
+            </p>
+          </header>
+          {cover && (
+            <figure class="px-6 pt-6 md:px-10">
+              <Image
+                src={cover}
+                alt={coverAlt ?? title}
+                widths={[480, 760, 1140]}
+                sizes="(min-width: 768px) 580px, 92vw"
+                layout="none"
+                class="max-h-[62vh] w-full rounded-2xl object-cover object-[50%_30%] ring-1 ring-ink/10"
+                loading="lazy"
+              />
+              {coverAlt && <figcaption class="eyebrow mt-2 text-ink/50">{coverAlt}</figcaption>}
+            </figure>
+          )}
+          <div class="prose prose-sand px-6 pt-6 pb-10 md:px-10 prose-headings:font-display prose-p:leading-[1.7]">
+            <Content />
+          </div>
+        </article>
+      );
+    })}
+  </div>
+
+  <StoryPanel />
+</section>

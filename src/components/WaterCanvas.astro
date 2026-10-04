@@ -1,0 +1,132 @@
+---
+/**
+ * Real-time water: caustics, light rays and a soft glow that follows the
+ * pointer. A ~2 KB WebGL shader with no library. It only draws while on
+ * screen, renders at reduced resolution, draws a single still frame when the
+ * visitor prefers reduced motion, and removes itself if WebGL is unavailable
+ * (the section's CSS gradient shows instead).
+ */
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+---
+
+<canvas data-water class={`absolute inset-0 h-full w-full ${cls}`} aria-hidden="true"></canvas>
+
+<script>
+  const VS = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+  const FS = `precision mediump float;uniform vec2 r;uniform float t;uniform vec2 m;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);
+return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+void main(){vec2 uv=gl_FragCoord.xy/r;float a=r.x/r.y;vec2 p=vec2(uv.x*a,uv.y)*3.2;float tt=t*.11;
+float n1=n(p+vec2(tt,-tt*.7));float n2=n(p*1.9+vec2(-tt*1.3,tt*.9)+n1*1.4);float n3=n(p*3.7+vec2(tt*.6,tt*1.1)+n2);
+float c=pow(1.-abs(n2*2.-1.),4.)*.75+pow(1.-abs(n3*2.-1.),6.)*.35;
+vec3 deep=vec3(.10,.27,.44);vec3 mid=vec3(.19,.41,.56);vec3 shal=vec3(.29,.55,.67);
+vec3 col=mix(deep,mid,smoothstep(0.,1.,uv.y+n1*.25-.1));col=mix(col,shal,smoothstep(.55,1.05,uv.y+n1*.2));
+col+=c*vec3(.55,.85,.95)*.16;
+float ray=0.;for(int i=0;i<3;i++){float fi=float(i);ray+=pow(max(0.,sin(uv.x*(5.+fi*2.3)+tt*(1.+fi*.4)+n1*2.)),10.);}
+col+=ray*.07*(1.-uv.y*.6);
+vec2 d=vec2(uv.x*a,uv.y)-vec2(m.x*a,m.y);col+=.07*smoothstep(.45,0.,length(d));
+col-=.06*(1.-smoothstep(0.,.9,uv.y));
+gl_FragColor=vec4(col,1.);}`;
+
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  for (const canvas of document.querySelectorAll<HTMLCanvasElement>('canvas[data-water]')) {
+    const gl = canvas.getContext('webgl', {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      powerPreference: 'low-power',
+    });
+    if (!gl) {
+      canvas.remove();
+      continue;
+    }
+    const compile = (type: number, src: string) => {
+      const s = gl.createShader(type)!;
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      return s;
+    };
+    const prog = gl.createProgram()!;
+    gl.attachShader(prog, compile(gl.VERTEX_SHADER, VS));
+    gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+      canvas.remove();
+      continue;
+    }
+    gl.useProgram(prog);
+    const buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const loc = gl.getAttribLocation(prog, 'p');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    const uR = gl.getUniformLocation(prog, 'r');
+    const uT = gl.getUniformLocation(prog, 't');
+    const uM = gl.getUniformLocation(prog, 'm');
+
+    // Render at ~60% of device pixels: plenty for soft water, cheap on phones.
+    const scale = Math.min(devicePixelRatio || 1, 2) * 0.6;
+    const resize = () => {
+      const w = Math.max(1, Math.round(canvas.clientWidth * scale));
+      const h = Math.max(1, Math.round(canvas.clientHeight * scale));
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w;
+        canvas.height = h;
+        gl.viewport(0, 0, w, h);
+      }
+    };
+
+    let mx = 0.5;
+    let my = 0.35;
+    let tx = mx;
+    let ty = my;
+    const host = canvas.parentElement ?? canvas;
+    host.addEventListener(
+      'pointermove',
+      (e) => {
+        const b = canvas.getBoundingClientRect();
+        tx = (e.clientX - b.left) / b.width;
+        ty = 1 - (e.clientY - b.top) / b.height;
+      },
+      { passive: true },
+    );
+
+    const start = performance.now();
+    let raf = 0;
+    let visible = false;
+    const frame = () => {
+      raf = 0;
+      resize();
+      mx += (tx - mx) * 0.06;
+      my += (ty - my) * 0.06;
+      gl.uniform2f(uR, canvas.width, canvas.height);
+      gl.uniform1f(uT, (performance.now() - start) / 1000);
+      gl.uniform2f(uM, mx, my);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (visible && !reduce && document.visibilityState === 'visible')
+        raf = requestAnimationFrame(frame);
+    };
+    const kick = () => {
+      if (!raf) raf = requestAnimationFrame(frame);
+    };
+
+    new IntersectionObserver(
+      ([e]) => {
+        visible = e.isIntersecting;
+        if (visible) kick();
+      },
+      { rootMargin: '10% 0px' },
+    ).observe(canvas);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && visible) kick();
+    });
+    addEventListener('resize', kick);
+    kick();
+  }
+</script>

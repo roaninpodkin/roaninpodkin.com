@@ -14,7 +14,7 @@ labels: photos
 
 ## Place
 
-(optional, e.g. Ko Tao, Thailand)
+(optional, e.g. Ko Tao, Thailand — this puts a pin on the Logbook map)
 
 ## Date
 

@@ -1,0 +1,14 @@
+{
+  "title": "Under the sea",
+  "date": "Summer 2025",
+  "sortDate": "2025-07-01",
+  "caption": "Freediving. I don’t remember exactly where.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./freediving.jpg",
+      "alt": "Roanin freediving, lying back over a coral reef with fins on",
+      "caption": "Under the sea."
+    }
+  ]
+}

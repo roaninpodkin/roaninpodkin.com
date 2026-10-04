@@ -1,0 +1,16 @@
+{
+  "title": "Switzerland",
+  "place": "Switzerland",
+  "coords": [46.98, 8.25],
+  "date": "Fall 2024",
+  "sortDate": "2024-11-01",
+  "caption": "Traveling Europe during the Madrid semester.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./alps.jpg",
+      "alt": "Roanin sitting on a rock looking out over the Alps",
+      "caption": "Climbing mountains."
+    }
+  ]
+}

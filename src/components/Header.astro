@@ -6,12 +6,13 @@ interface Props {
   /** 'light' = dark text on a light background; 'dark' = light text on water. */
   tone?: 'light' | 'dark';
   current?: string;
+  class?: string;
 }
-const { tone = 'dark', current = '' } = Astro.props;
+const { tone = 'dark', current = '', class: cls = '' } = Astro.props;
 const light = tone === 'light';
 ---
 
-<header class={`absolute inset-x-0 top-0 z-30 ${light ? 'text-ink' : 'text-foam'}`}>
+<header class={`absolute inset-x-0 top-0 z-30 ${light ? 'text-ink' : 'text-foam'} ${cls}`}>
   <div class="wrap flex h-20 items-center justify-between">
     <a
       href={href('/')}

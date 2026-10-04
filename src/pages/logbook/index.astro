@@ -2,6 +2,7 @@
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import WorldMap from '../../components/WorldMap.astro';
 import { SITE } from '../../consts';
 import { href } from '../../lib/url';
 import copy from '../../content/copy.json';
@@ -10,7 +11,16 @@ const albums = (await getCollection('logbook')).sort((a, b) =>
   b.data.sortDate.localeCompare(a.data.sortDate),
 );
 const slugOf = (id: string) => id.split('/')[0];
-const pad = (n: number) => String(n).padStart(2, '0');
+const pins = albums
+  .filter((a) => a.data.coords)
+  .map((a) => ({
+    slug: slugOf(a.id),
+    title: a.data.title,
+    place: a.data.place ?? a.data.title,
+    coords: a.data.coords!,
+    count: a.data.photos.length,
+  }));
+const total = albums.reduce((n, a) => n + a.data.photos.length, 0);
 const crumbs = {
   '@type': 'BreadcrumbList',
   itemListElement: [
@@ -24,64 +34,61 @@ const crumbs = {
   title={copy.logbook.title}
   description={copy.logbook.description}
   current="/logbook/"
-  bodyClass="bg-sea-600"
+  bodyClass="bg-sea-700"
   jsonLd={[crumbs]}
 >
-  <section class="bg-[linear-gradient(to_bottom,var(--color-sea-600),var(--color-sea-700))] pt-32 pb-24 text-foam">
+  <section class="bg-[linear-gradient(to_bottom,var(--color-sea-600),var(--color-sea-700))] pt-32 pb-10 text-foam">
     <div class="wrap">
       <p class="eyebrow text-tan">Logbook</p>
       <h1 class="mt-3 font-display text-[clamp(2.8rem,6vw,5.2rem)] leading-[1.02]">
         {copy.logbook.title}
       </h1>
-      <p class="mt-5 max-w-2xl text-lg text-foam/75 md:text-xl">{copy.logbook.lede}</p>
+      <p class="mt-5 max-w-2xl text-lg text-foam/75 md:text-xl">
+        {copy.logbook.lede} {pins.length} places, {total} photos.
+      </p>
+      <div class="reveal mt-10 rounded-[1.5rem] bg-sea-700/40 p-3 ring-1 ring-white/10 md:p-6">
+        <WorldMap pins={pins} />
+      </div>
+    </div>
+  </section>
 
-      {albums.length === 0 ? (
-        <p class="mt-16 text-foam/70">No entries yet.</p>
-      ) : (
-        <ol class="mt-16 space-y-16">
-          {albums.map((a, i) => {
-            const cover = a.data.photos.find((p) => p.kind === 'image');
-            const count = a.data.photos.length;
-            return (
-              <li>
-                <a
-                  href={href(`/logbook/${slugOf(a.id)}/`)}
-                  class="group grid gap-6 md:grid-cols-[1fr_1.4fr] md:gap-10"
-                >
-                  {cover && cover.kind === 'image' && (
-                    <div class="overflow-hidden rounded-[1.5rem] ring-1 ring-white/10">
-                      <Image
-                        src={cover.src}
-                        alt={cover.alt ?? a.data.title}
-                        width={960}
-                        height={720}
-                        widths={[480, 720, 960]}
-                        sizes="(min-width: 768px) 40vw, 92vw"
-                        class="h-auto w-full transition duration-700 group-hover:scale-[1.02]"
-                      />
-                    </div>
-                  )}
-                  <div class="self-center">
-                    <p class="eyebrow text-tan">
-                      Entry {pad(albums.length - i)} ·{' '}
-                      {[a.data.place, a.data.date].filter(Boolean).join(' · ')}
-                    </p>
-                    <h2 class="mt-3 font-display text-4xl leading-tight group-hover:underline group-hover:decoration-tan group-hover:underline-offset-4 md:text-5xl">
-                      {a.data.title}
-                    </h2>
-                    {a.data.caption && (
-                      <p class="mt-4 max-w-xl leading-relaxed text-foam/75">{a.data.caption}</p>
-                    )}
-                    <p class="mt-4 text-sm text-foam/50">
-                      {count} {count === 1 ? 'photo' : 'photos'}
-                    </p>
+  <section class="bg-sea-700 pt-10 pb-24 text-foam">
+    <div class="wrap">
+      <p class="eyebrow text-tan">All entries, newest first</p>
+      <ol class="mt-6 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+        {albums.map((a) => {
+          const cover = a.data.photos.find((p) => p.kind === 'image');
+          const count = a.data.photos.length;
+          return (
+            <li class="reveal">
+              <a href={href(`/logbook/${slugOf(a.id)}/`)} class="group block">
+                {cover && cover.kind === 'image' && (
+                  <div class="overflow-hidden rounded-2xl ring-1 ring-white/10">
+                    <Image
+                      src={cover.src}
+                      alt={cover.alt ?? a.data.title}
+                      width={800}
+                      height={600}
+                      widths={[400, 800]}
+                      sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 92vw"
+                      class="h-auto w-full transition duration-700 group-hover:scale-[1.03]"
+                    />
                   </div>
-                </a>
-              </li>
-            );
-          })}
-        </ol>
-      )}
+                )}
+                <p class="eyebrow mt-4 text-tan">
+                  {[a.data.place, a.data.date].filter(Boolean).join(' · ')}
+                </p>
+                <h2 class="mt-1 font-display text-3xl leading-tight group-hover:underline group-hover:decoration-tan group-hover:underline-offset-4">
+                  {a.data.title}
+                </h2>
+                <p class="mt-1 text-sm text-foam/55">
+                  {count} {count === 1 ? 'photo' : 'photos'}
+                </p>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
     </div>
   </section>
 </BaseLayout>

@@ -2,8 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../consts';
 import copy from '../content/copy.json';
+import avocaLogo from '../assets/avoca-logo.svg?raw';
 
-const { now } = copy;
+const page = copy.nowPage;
 const crumbs = {
   '@type': 'BreadcrumbList',
   itemListElement: [
@@ -14,8 +15,8 @@ const crumbs = {
 ---
 
 <BaseLayout
-  title={now.title}
-  description={now.description}
+  title={page.title}
+  description={page.description}
   current="/now/"
   bodyClass="bg-sea-700"
   jsonLd={[crumbs]}
@@ -25,10 +26,17 @@ const crumbs = {
       <div>
         <p class="eyebrow text-tan">Now</p>
         <h1 class="mt-3 font-display text-[clamp(2.8rem,6vw,5.2rem)] leading-[1.02]">
-          {now.title}
+          {page.title}
         </h1>
-        <div class="prose prose-sea prose-lg mt-12 max-w-[68ch] prose-headings:font-display prose-p:leading-[1.75]">
-          {now.sections.map((s) => (
+        <a
+          href={SITE.avoca}
+          rel="noopener"
+          class="mt-8 inline-block text-foam transition hover:text-tan [&_svg]:h-9 [&_svg]:w-auto"
+          aria-label="Avoca"
+          set:html={avocaLogo}
+        />
+        <div class="prose prose-sea prose-lg mt-8 max-w-[68ch] prose-headings:font-display prose-p:leading-[1.75]">
+          {page.sections.map((s) => (
             <section>
               <h2>{s.heading}</h2>
               {s.paragraphs.map((p) => (
@@ -49,7 +57,7 @@ const crumbs = {
           does for a shop like yours.
         </p>
         <a href={SITE.booking} rel="noopener" class="btn btn-lagoon mt-6 w-full text-base">
-          {now.cta}
+          {page.cta}
         </a>
         <p class="mt-3 text-center text-sm text-ink/60">
           Or email{' '}

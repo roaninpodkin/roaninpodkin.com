@@ -8,15 +8,17 @@ import { islandPath } from '../lib/chart';
 
 interface Props {
   story: CollectionEntry<'stories'>;
+  /** 1-based position in the chain; 0 for side quests. */
   index: number;
   total: number;
   prev?: CollectionEntry<'stories'>;
   next?: CollectionEntry<'stories'>;
 }
 const { story, index, total, prev, next } = Astro.props;
-const { title, place, dateLabel, date, excerpt, cover, coverAlt, chart } = story.data;
+const { title, place, dateLabel, date, excerpt, cover, coverAlt, chart, quest } = story.data;
 const url = `${SITE.url}/stories/${story.id}/`;
 const pad = (n: number) => String(n).padStart(2, '0');
+const eyebrow = quest ? 'Side quests' : `Island ${pad(index)} of ${pad(total)}`;
 
 const article = {
   '@type': 'Article',
@@ -55,6 +57,11 @@ const crumbs = {
         <svg class="mt-1 h-16 w-16 shrink-0" viewBox="-40 -40 80 80" aria-hidden="true">
           <circle r="36" fill="var(--color-lagoon)" fill-opacity="0.22"></circle>
           <path
+            d={islandPath(3, 5, 18, chart.seed, { scale: 1.25, rough: 0.3 })}
+            fill="#061430"
+            opacity="0.25"
+          ></path>
+          <path
             d={islandPath(0, 0, 18, chart.seed, { scale: 1.25, rough: 0.3 })}
             fill="var(--color-sand-300)"
           ></path>
@@ -65,7 +72,7 @@ const crumbs = {
         </svg>
         <div>
           <p class="eyebrow text-tan-deep">
-            Island {pad(index)} of {pad(total)} · {place} · {dateLabel}
+            {eyebrow} · {place} · {dateLabel}
           </p>
           <h1 class="mt-3 font-display text-[clamp(2.6rem,6vw,5rem)] leading-[1.02]">{title}</h1>
           <p class="mt-5 max-w-2xl font-display text-2xl leading-snug text-sea-600 italic">
@@ -83,7 +90,8 @@ const crumbs = {
             alt={coverAlt ?? title}
             widths={[640, 960, 1280, 1800]}
             sizes="(min-width: 1152px) 1104px, 92vw"
-            class="h-auto w-full"
+            layout="none"
+            class="max-h-[72vh] w-full object-cover object-[50%_30%]"
             loading="eager"
             fetchpriority="high"
           />
@@ -118,7 +126,9 @@ const crumbs = {
             href={href(`/stories/${next.id}/`)}
             class="group rounded-2xl p-5 text-right ring-1 ring-ink/10 transition hover:bg-white/60"
           >
-            <span class="eyebrow text-tan-deep">Next island →</span>
+            <span class="eyebrow text-tan-deep">
+              {next.data.quest ? 'Then the side quests →' : 'Next island →'}
+            </span>
             <span class="mt-2 block font-display text-2xl group-hover:underline group-hover:decoration-tan group-hover:underline-offset-4">
               {next.data.title}
             </span>

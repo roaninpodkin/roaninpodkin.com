@@ -6,15 +6,18 @@
 interface Props {
   fill?: string;
   class?: string;
+  /** 'top' overlaps the section above; 'bottom' sits inside the section's bottom edge. */
+  position?: 'top' | 'bottom';
 }
-const { fill = 'var(--color-sea-100)', class: cls = '' } = Astro.props;
+const { fill = 'var(--color-sea-100)', class: cls = '', position = 'top' } = Astro.props;
+const place = position === 'top' ? 'top-0 -translate-y-[98%]' : 'bottom-0';
 // Period is 1440 units; the path is two periods so it can loop by -50%.
 const d =
   'M0 60 C360 10 360 110 720 60 C1080 10 1080 110 1440 60 C1800 10 1800 110 2160 60 C2520 10 2520 110 2880 60 L2880 121 L0 121 Z';
 ---
 
 <div
-  class={`pointer-events-none absolute inset-x-0 top-0 h-14 -translate-y-[98%] overflow-hidden md:h-24 ${cls}`}
+  class={`pointer-events-none absolute inset-x-0 ${place} h-14 overflow-hidden md:h-24 ${cls}`}
   aria-hidden="true"
 >
   <svg

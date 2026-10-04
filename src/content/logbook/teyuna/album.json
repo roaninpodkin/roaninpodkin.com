@@ -1,0 +1,16 @@
+{
+  "title": "Teyuna",
+  "place": "Teyuna, Colombia",
+  "coords": [11.04, -73.93],
+  "date": "Summer 2026",
+  "sortDate": "2026-06-25",
+  "caption": "Four days through the jungle to the Lost City, right after graduation.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./lost-city.jpg",
+      "alt": "Roanin taking a selfie above the stone terraces of Teyuna, the Lost City, in the Colombian jungle",
+      "caption": "The Lost City."
+    }
+  ]
+}

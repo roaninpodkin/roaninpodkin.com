@@ -1,89 +1,37 @@
 {
   "surface": {
     "eyebrow": "Santa Barbara, California",
-    "tagline": "Sales at Avoca. Diver, hiker, and a people person from Vacaville.",
-    "intro": "I grew up in Vacaville, studied economics at UCSB, taught myself AI, and now I spend my days getting Avoca in front of the people it helps. Scroll down and I'll show you the rest.",
-    "scrollCue": "Scroll to dive"
-  },
-  "river": {
-    "heading": "Where I come from",
-    "lede": "Three stones in the river, before any of this made sense.",
-    "stones": [
-      {
-        "key": "rock",
-        "title": "The rock",
-        "body": "My mom tells this story. I was about three, in Vacaville. I stepped off a rock and fell, and it made me so mad I climbed back up and stepped off again. Then again. Not until I got it right once, but until I couldn't get it wrong. That's still how I work."
-      },
-      {
-        "key": "farm",
-        "title": "The farm",
-        "body": "My older brother Colby runs a fish farm. I spent summers working with him, and it was the first business I ever saw up close. It's where I learned what a real work ethic looks like, and where I started getting ideas of my own."
-      },
-      {
-        "key": "ucsb",
-        "title": "UCSB",
-        "body": "I studied economics at UC Santa Barbara. The plan was to join my brother after graduation. Right before my last summer I decided I wanted to go a different direction first, and that one decision set up everything that came after."
-      }
-    ]
-  },
-  "openWater": {
-    "heading": "How I decide",
-    "lede": "I keep a ranked list of what matters. Every opportunity gets held up against it.",
-    "valuesIntro": "I've written out my values in order. When something comes my way, I check it against the list before I check it against my bank account.",
-    "valuesTop": [
-      {
-        "name": "Relationships",
-        "line": "People come first. I'm happiest doing things with other people, and I want to do right by them."
-      },
-      {
-        "name": "Freedom",
-        "line": "To say what I want and do what I want, when I want. Financial freedom is part of that, not all of it."
-      }
-    ],
-    "valuesRest": ["Health", "Respect", "Confidence", "Bravery", "Resilience"],
-    "moneyRule": "Money matters. But every paying opportunity is quietly asking you to trade some of these away. I only take the ones that don't.",
-    "wallNote": {
-      "quote": "Retire by 30. True retirement is when you stop sacrificing today for tomorrow.",
-      "caption": "On my wall for the last year and a half."
-    },
-    "stepBack": {
-      "heading": "Two months, solo",
-      "body": "The summer after college I backpacked through Taiwan, Japan, Vietnam, Thailand, Singapore and Indonesia on my own. It was a chance to step back and ask: do I like who I've become, and who do I want to be? I still do that audit on purpose. Where am I, where did I come from, where am I going, and does it all line up."
-    },
-    "aiArc": {
-      "heading": "Then AI happened",
-      "body": "That was summer 2025. I came home and went deep: hours of videos a day, then testing what the models could actually do, building agents, automating the boring stuff. I started telling people about it, then doing it for them, and got a business license as an AI consultant. My mentors said get real industry experience. I look for good leaders, and I found them at Avoca."
-    }
+    "intro": "I grew up in Vacaville, studied econ at UCSB, taught myself AI, and now I spend my days getting Avoca in front of the people it helps.",
+    "scrollCue": "Dive in"
   },
   "islands": {
     "heading": "The islands",
-    "lede": "Each one is a story. Follow the route, or pick an island."
+    "lede": "My story, in order. Click an island to read it. The side quests are off to the side."
   },
-  "deep": {
+  "now": {
     "heading": "What I'm doing now",
-    "lede": "The deep end. This is the work.",
     "avoca": {
-      "heading": "Avoca",
-      "what": "Avoca is the AI front office for home-service businesses. It answers the calls, texts and chats a busy shop would otherwise miss, and books the job straight into the CRM.",
+      "what": "Avoca is the agentic layer that runs the front office for home-service businesses. It answers the calls, texts and chats a busy shop would otherwise miss, and books the job straight into the CRM.",
       "myRole": "I'm on the sales development team in Santa Barbara. My job is to grow the company by getting it in front of the owners it was built for.",
-      "why": "I chose Avoca for the people running it, and because the product solves a real problem better than anything I'd seen. It lined up with the list.",
-      "forOwners": "If you run a home-service business and you've ever lost a job to a missed call, I'd like 20 minutes to show you what this does.",
+      "why": "I chose Avoca for the people running it, and because the product solves a real problem better than anything I'd seen.",
+      "forOwners": "If you run a home-service business and you've ever lost a job to a missed call, put some time on my calendar so I can show you what we do.",
       "cta": "Book time with me",
-      "ctaSub": "Pick a slot. No script, no pressure."
+      "ctaSub": "Pick a slot. No script.",
+      "badge": "Number one rep in sales-qualified opps, September 2026"
     },
     "consulting": {
       "heading": "Before Avoca: consulting",
-      "body": "In 2025 I worked as an AI consultant. The biggest project was La Cumbre Country Club, where I presented to the whole team on bringing AI into the club and then completed a contract to do it. I also worked with small businesses, and the most useful thing I did was sit down with owners one-on-one and teach them.",
+      "body": "In 2025 I worked as an AI consultant. The biggest project was La Cumbre Country Club, where I presented to the whole team on bringing AI into the club, then signed a contract to do it and completed it. I also worked with small businesses.",
       "bullets": [
-        "Invoicing automations",
-        "Knowledge-search agents",
+        "One-on-one training sessions",
         "Automated reporting",
-        "One-on-one training sessions"
+        "Knowledge-search agents",
+        "And more"
       ]
     },
     "project": {
-      "heading": "A project I keep tabs on",
-      "body": "Fish farms lose a huge share of young fish early, and you can see trouble coming in how the fish behave. The idea: pattern recognition on video to catch disease, stress, hunger or low oxygen before it spreads. I started on it with my brother's farm in mind, and I still keep tabs on it."
+      "heading": "Finsight, a project I keep tabs on",
+      "body": "Young fish die early at a high rate, and you can see trouble coming in how they behave. Finsight is my idea for using pattern recognition on video, through computer vision, to catch early signs of disease, stress, hunger or low oxygen before it spreads. It started with my brother's farm in mind, and I still keep tabs on it."
     }
   },
   "testimonials": {
@@ -113,68 +61,86 @@
   },
   "floor": {
     "heading": "The floor",
-    "line": "The long-term goal is simple to say: build a life nobody on the planet would trade me for. Ask me what that means.",
+    "line": "The long-term goal: build a life I wouldn't trade with anyone else on the planet. Ask me what that means.",
     "cta": "Say hello"
   },
   "about": {
     "title": "About Roanin Podkin",
-    "description": "Who Roanin Podkin is: Vacaville, a fish farm, UCSB economics, two months solo in Asia, teaching himself AI, consulting, and now sales at Avoca in Santa Barbara.",
+    "description": "Who Roanin Podkin is: Vacaville, a fish farm in Washington, UCSB economics and a semester in Madrid, two months solo in Asia, teaching himself AI, La Cumbre, and now Avoca in Santa Barbara.",
     "sections": [
       {
         "heading": "Where I started",
         "paragraphs": [
-          "I grew up in Vacaville, California. I was always looking for a way to make a few dollars, and my older brother Colby, who runs a fish farm, was the first entrepreneur I ever watched up close. I spent summers working with him. A few jobs along the way taught me what a real work ethic looks like, but I think most of it was there from the start.",
-          "I studied economics at UC Santa Barbara. The plan was to join my brother after graduation. Right before my last summer I decided to go a different direction first."
+          "I grew up in Vacaville, California. I've played golf since I was a kid, made Eagle Scout, and worked my first job at In-N-Out for a year in high school. I was always looking for a way to make a few dollars. The work ethic was there from the start; the jobs just gave it somewhere to go.",
+          "My older brother Colby runs a fish farm in Washington, and he was the first entrepreneur I watched up close. We strategized together through high school and college, and I spent a couple of summers working with him. Being around the fish gave me Finsight, an idea for catching early signs of disease, stress, hunger or low oxygen from how fish behave on video. I still keep tabs on it."
+        ]
+      },
+      {
+        "heading": "Santa Barbara",
+        "paragraphs": [
+          "I studied economics at UC Santa Barbara, class of 2026, with a semester in Madrid in fall 2024 that I used to see as much of Europe as I could.",
+          "At the start of my sophomore year I took a job at La Cumbre Country Club to meet the members and play free golf. The members, successful business owners, became mentors. We golfed together and they talked to me about my career and my life. It's through them that I found Avoca."
         ]
       },
       {
         "heading": "Stepping back",
         "paragraphs": [
-          "So I went to Asia alone for almost two months: Taiwan, Japan, Vietnam, Thailand, Singapore and Indonesia. I got my PADI certification on Ko Tao and spent four days on a boat from Lombok to Flores. Mostly it was a chance to step back and ask whether I liked who I'd become and who I wanted to be. I still do that audit on purpose."
+          "The summer before my last year I went to Asia alone for almost two months: Taiwan, Japan, Vietnam, Thailand, Singapore and Indonesia. I got PADI-certified on Ko Tao and spent four days on a boat from Lombok to Flores, with whale sharks in between. Mostly it was a chance to step back and ask whether I liked who I'd become and who I wanted to be. I still do that audit on purpose."
         ]
       },
       {
         "heading": "Then AI happened",
         "paragraphs": [
-          "That was summer 2025. I came home and went deep: hours of videos a day, then testing what the models could actually do, building agents, automating the boring stuff. I started telling people about it, then doing it for them, and got a business license as an AI consultant. The biggest project was La Cumbre Country Club. The most useful thing I did was sit down with owners one-on-one and teach them.",
+          "I came back in the middle of the AI boom and went deep: hours of videos a day, then testing what the models could actually do, building agents, automating the boring work. I started telling people, then doing it for them, and got a business license as an AI consultant. The biggest project was La Cumbre, where I presented to the whole team and then completed a contract. The most useful thing I did was sit down with owners one-on-one and teach them.",
           "My mentors said get real industry experience. I look for good leaders, and I found them at Avoca, where I joined the sales development team in Santa Barbara in July 2026."
-        ]
-      },
-      {
-        "heading": "How I decide",
-        "paragraphs": [
-          "I keep my values written out in order. Relationships first. Then freedom. Then health, respect, confidence, bravery, resilience. Every paying opportunity is quietly asking you to trade some of these away, and I only take the ones that don't.",
-          "There's a note on my wall that says retire by 30. Underneath it: true retirement is when you stop sacrificing today for tomorrow."
         ]
       },
       {
         "heading": "Off the clock",
         "paragraphs": [
-          "Hikes, new countries, side quests, golf, pickup soccer, the gym, runs. Mostly, anything active with people I like. If you want to know what I mean by a life nobody would trade me for, ask."
+          "Hikes, new countries, side quests, golf, pickup soccer, the gym, runs. Mostly anything active with people I like."
         ]
       }
-    ]
+    ],
+    "values": {
+      "heading": "How I decide",
+      "intro": "I keep my values written out. Relationships come first. The rest matter just as much as each other.",
+      "first": {
+        "name": "Relationships",
+        "line": "People come first. I care about doing right by them, and I'm happiest doing things with other people."
+      },
+      "rest": [
+        { "name": "Freedom", "line": "To say what I want and do what I want, when I want." },
+        { "name": "Health", "line": "Mentally and physically." },
+        { "name": "Respect", "line": "For all people." },
+        { "name": "Confidence", "line": "In every situation." },
+        { "name": "Bravery", "line": "Always." },
+        { "name": "Resilience", "line": "To push through whenever it's needed." }
+      ],
+      "rule": "Every opportunity I assess, I check against my values and my big goals, and make sure it's aligned with both.",
+      "wallNote": "There's a note on my wall that says retire by 30. Underneath it: true retirement is when you stop sacrificing today for tomorrow."
+    }
   },
-  "now": {
+  "nowPage": {
     "title": "What I'm doing now",
-    "description": "Roanin Podkin's current work: sales development at Avoca, the AI front office for home-service businesses, from Santa Barbara.",
+    "description": "Roanin Podkin's current work: sales development at Avoca, the agentic layer that runs the front office for home-service businesses, from Santa Barbara.",
     "sections": [
       {
         "heading": "Avoca",
         "paragraphs": [
-          "Avoca is the AI front office for home-service businesses. It answers the calls, texts and chats a busy shop would otherwise miss, and books the job straight into the CRM. I'm on the sales development team in Santa Barbara, and my job is to grow the company by getting it in front of the owners it was built for."
+          "Avoca is the agentic layer that runs the front office for home-service businesses. It answers the calls, texts and chats a busy shop would otherwise miss, and books the job straight into the CRM. I'm on the sales development team in Santa Barbara, and my job is to grow the company by getting it in front of the owners it was built for."
         ]
       },
       {
         "heading": "If you run a home-service business",
         "paragraphs": [
-          "If you've ever lost a job to a missed call, I'd like 20 minutes to show you what this does. No script. If it isn't a fit, I'll tell you."
+          "If you've ever lost a job to a missed call, put some time on my calendar so I can show you what we do. No script. If it isn't a fit, I'll tell you."
         ]
       },
       {
         "heading": "What I'm learning",
         "paragraphs": [
-          "How owners actually buy. Hint: it's trust, not the cheaper install. I'm also still keeping tabs on an aquaculture project from my brother's farm days, and still looking for the next mountain."
+          "How owners actually buy. It's trust, not the cheaper install. I'm also still keeping tabs on Finsight, and still looking for the next mountain."
         ]
       }
     ],
@@ -187,11 +153,11 @@
   },
   "logbook": {
     "title": "Logbook",
-    "description": "Photos from the road, the water and the mountain.",
-    "lede": "Photos from the road, the water and the mountain. Newest first."
+    "description": "Everywhere the photos were taken, on one map.",
+    "lede": "Everywhere the photos were taken. Tap a pin."
   },
   "seo": {
     "homeTitle": "Roanin Podkin — Sales at Avoca, Santa Barbara",
-    "homeDescription": "Roanin Podkin: sales at Avoca in Santa Barbara, UCSB economics, diver and hiker from Vacaville. Stories, photos and what he's working on now."
+    "homeDescription": "Roanin Podkin: sales development at Avoca in Santa Barbara, UCSB economics, from Vacaville. His story as islands on a chart, what he's working on now, and what people say."
   }
 }

@@ -1,10 +1,16 @@
 {
   "title": "Bierstadt and Broomfield",
-  "place": "Colorado",
+  "place": "Mt Bierstadt, Colorado",
   "date": "Aug 2026",
   "sortDate": "2026-08-29",
   "caption": "Episode one with Dennis Yu, Jason Amato's workshop, a 5 a.m. start up Mt Bierstadt, and the Denver airport chair.",
   "photos": [
+    {
+      "kind": "image",
+      "src": "./00-summit-crew.jpg",
+      "alt": "Five hikers on the summit of Mt Bierstadt holding a cardboard sign reading Mt. Bierstadt 14,065",
+      "caption": "The crew I climbed it with."
+    },
     {
       "kind": "image",
       "src": "./01-summit.jpg",
@@ -47,5 +53,6 @@
       "alt": "Roanin and Dennis Yu recording at Denver International Airport",
       "caption": "Phone on the table, no mic."
     }
-  ]
+  ],
+  "coords": [39.5826, -105.6686]
 }

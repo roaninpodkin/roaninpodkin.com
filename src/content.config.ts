@@ -3,7 +3,12 @@ import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
 const stories = defineCollection({
-  loader: glob({ pattern: '*.md', base: './src/content/stories' }),
+  // One folder per story: src/content/stories/<slug>/index.md
+  loader: glob({
+    pattern: '*/index.md',
+    base: './src/content/stories',
+    generateId: ({ entry }) => entry.split('/')[0],
+  }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
@@ -11,26 +16,22 @@ const stories = defineCollection({
       dateLabel: z.string(),
       date: z.coerce.date(),
       excerpt: z.string(),
+      /** Position in the chain. Side quests sit outside the chain. */
       order: z.number(),
+      quest: z.boolean().default(false),
       cover: image().optional(),
       coverAlt: z.string().optional(),
       draft: z.boolean().default(false),
-      /** Where the island sits on the sea chart (1000 × 640 viewBox). */
+      /** Where the island sits on the sea chart (1000 × 620 viewBox). */
       chart: z.object({
         x: z.number(),
         y: z.number(),
         r: z.number(),
         seed: z.number(),
-        kind: z.enum(['island', 'atoll', 'peak']).default('island'),
+        kind: z.enum(['island', 'quests']).default('island'),
         labelAt: z.enum(['r', 'l', 't', 'b']).default('r'),
       }),
     }),
-});
-
-const photo = z.object({
-  kind: z.literal('image').default('image'),
-  alt: z.string().optional(),
-  caption: z.string().optional(),
 });
 
 const logbook = defineCollection({
@@ -39,6 +40,8 @@ const logbook = defineCollection({
     z.object({
       title: z.string(),
       place: z.string().optional(),
+      /** [latitude, longitude] for the world map pin. */
+      coords: z.tuple([z.number(), z.number()]).optional(),
       /** Display date, e.g. "Aug 2026". */
       date: z.string().optional(),
       /** Sortable date, YYYY-MM-DD. */
@@ -46,7 +49,12 @@ const logbook = defineCollection({
       caption: z.string().optional(),
       photos: z.array(
         z.discriminatedUnion('kind', [
-          photo.extend({ kind: z.literal('image'), src: image() }),
+          z.object({
+            kind: z.literal('image'),
+            src: image(),
+            alt: z.string().optional(),
+            caption: z.string().optional(),
+          }),
           z.object({
             kind: z.literal('video'),
             /** Public path, e.g. /logbook/<album>/clip.mp4 */

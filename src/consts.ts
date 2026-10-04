@@ -2,7 +2,7 @@ export const SITE = {
   name: 'Roanin Podkin',
   title: 'Roanin Podkin',
   description:
-    'Roanin Podkin: sales at Avoca in Santa Barbara, UCSB economics, diver and hiker from Vacaville. Stories, photos and what he is working on now.',
+    'Roanin Podkin: sales development at Avoca in Santa Barbara, UCSB economics, from Vacaville. The story as islands, what he is working on now, and photos from the road.',
   url: 'https://roaninpodkin.com',
   locale: 'en_US',
   lang: 'en',
@@ -24,12 +24,11 @@ export const NAV = [
   { label: 'About', path: '/about/' },
 ] as const;
 
-/** The home page is one long dive. Each stop is a section id, a depth and a label. */
+/** The home page is one dive. Each stop is a section id, its depth in metres, and a label. */
 export const DIVE = [
   { id: 'surface', depth: 0, label: 'Surface' },
-  { id: 'river', depth: 5, label: 'The river' },
-  { id: 'open-water', depth: 12, label: 'Open water' },
-  { id: 'islands', depth: 20, label: 'The islands' },
-  { id: 'the-deep', depth: 30, label: 'The deep' },
-  { id: 'the-floor', depth: 40, label: 'The floor' },
+  { id: 'islands', depth: 10, label: 'The islands' },
+  { id: 'now', depth: 24, label: 'Now' },
+  { id: 'voices', depth: 32, label: 'What people say' },
+  { id: 'floor', depth: 40, label: 'The floor' },
 ] as const;

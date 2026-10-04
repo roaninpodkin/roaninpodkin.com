@@ -179,6 +179,29 @@ if (dateText || !album.date) album.date = date.label;
 if (dateText) album.sortDate = date.sort;
 if (albumCaption) album.caption = albumCaption;
 
+// A Place becomes a pin on the Logbook map. One lookup per upload.
+if (album.place && !album.coords) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(album.place)}`;
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'roaninpodkin.com logbook (roaninpodkin@gmail.com)' },
+    });
+    const hits = await res.json();
+    if (Array.isArray(hits) && hits[0]) {
+      album.coords = [
+        Number(Number(hits[0].lat).toFixed(4)),
+        Number(Number(hits[0].lon).toFixed(4)),
+      ];
+    } else {
+      console.log(
+        `::warning::Could not find "${album.place}" on the map; add "coords": [lat, lng] to album.json by hand.`,
+      );
+    }
+  } catch (e) {
+    console.log(`::warning::Geocoding failed for "${album.place}": ${e.message}`);
+  }
+}
+
 // Dedupe by content hash (the hash is the second part of each file name), so an
 // edited issue that re-triggers the workflow doesn't add the same photo twice.
 const existing = new Set(

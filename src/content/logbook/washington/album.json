@@ -1,0 +1,16 @@
+{
+  "title": "The farm",
+  "place": "Washington State",
+  "coords": [47.4, -120.6],
+  "date": "Summers",
+  "sortDate": "2023-07-01",
+  "caption": "A couple of summers working with my brother Colby.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./largemouth-bass.jpg",
+      "alt": "Roanin in a bucket hat holding a largemouth bass",
+      "caption": "A healthy largemouth bass."
+    }
+  ]
+}

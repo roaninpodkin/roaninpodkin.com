@@ -1,0 +1,16 @@
+{
+  "title": "Sintra",
+  "place": "Sintra, Portugal",
+  "coords": [38.7978, -9.39],
+  "date": "Fall 2024",
+  "sortDate": "2024-10-15",
+  "caption": "A weekend away from Madrid.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./moorish-castle.jpg",
+      "alt": "Roanin smiling with arms out between old stone battlements, a red and yellow palace on the hill behind",
+      "caption": "Sintra, Portugal."
+    }
+  ]
+}

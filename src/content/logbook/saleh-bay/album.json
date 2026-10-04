@@ -1,0 +1,22 @@
+{
+  "title": "Saleh Bay",
+  "place": "Saleh Bay, Sumbawa, Indonesia",
+  "coords": [-8.3, 117.9],
+  "date": "Summer 2025",
+  "sortDate": "2025-07-20",
+  "caption": "Whale sharks, on the boat from Lombok to Flores.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./whale-sharks.jpg",
+      "alt": "Roanin underwater giving a shaka next to two whale sharks",
+      "caption": "Swimming with whale sharks."
+    },
+    {
+      "kind": "image",
+      "src": "./diving-down.jpg",
+      "alt": "Roanin diving down toward a whale shark, seen from above",
+      "caption": "Diving down."
+    }
+  ]
+}

@@ -138,84 +138,7 @@
     }
   }
 
-  /* River stones: soft, irregular shapes instead of cards */
-  .stone {
-    @apply relative bg-sand-100/90 px-9 py-8 text-ink shadow-[0_24px_48px_-32px_rgba(11,27,43,0.5)] ring-1 ring-white/70 md:px-12 md:py-10;
-    border-radius: 4rem 3rem 4.5rem 3.5rem / 3rem 4rem 3rem 4.5rem;
-  }
-  .stone:nth-child(2) {
-    border-radius: 3.5rem 4.5rem 3rem 4rem / 4.5rem 3rem 4rem 3rem;
-  }
-  .stone:nth-child(3) {
-    border-radius: 4.5rem 3.5rem 4rem 3rem / 3rem 4.5rem 3.5rem 4rem;
-  }
-
-  /* The note on the wall */
-  .wall-note {
-    @apply relative bg-sand-100 p-8 text-ink shadow-[0_30px_50px_-30px_rgba(0,0,0,0.6)];
-    transform: rotate(-1.5deg);
-  }
-  .wall-note::before {
-    content: '';
-    position: absolute;
-    top: -14px;
-    left: 50%;
-    width: 84px;
-    height: 26px;
-    transform: translateX(-50%) rotate(-3deg);
-    background: rgba(255, 255, 255, 0.55);
-    border: 1px solid rgba(11, 27, 43, 0.08);
-    backdrop-filter: blur(2px);
-  }
-
-  /* Underwater light shafts */
-  .shaft {
-    position: absolute;
-    top: -10%;
-    height: 120%;
-    width: clamp(90px, 16vw, 240px);
-    pointer-events: none;
-    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 70%);
-    filter: blur(14px);
-    transform: skewX(-12deg);
-    animation: sway 16s ease-in-out infinite;
-  }
-
-  /* Rising bubbles */
-  .bubble {
-    position: absolute;
-    bottom: -40px;
-    width: var(--s, 10px);
-    height: var(--s, 10px);
-    border-radius: 50%;
-    pointer-events: none;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    background: radial-gradient(
-      circle at 30% 30%,
-      rgba(255, 255, 255, 0.4),
-      rgba(255, 255, 255, 0.02) 70%
-    );
-    animation: rise var(--d, 18s) linear infinite;
-    animation-delay: var(--delay, 0s);
-  }
-
-  /* Bioluminescence on the floor */
-  .spark {
-    position: absolute;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    pointer-events: none;
-    background: var(--color-lagoon);
-    box-shadow: 0 0 8px 2px rgba(60, 192, 203, 0.55);
-    animation: twinkle var(--d, 5s) ease-in-out infinite;
-    animation-delay: var(--delay, 0s);
-  }
-
   @media (prefers-reduced-motion: reduce) {
-    .shaft,
-    .bubble,
-    .spark,
     .wave {
       animation: none !important;
     }
@@ -228,42 +151,6 @@
   }
   to {
     transform: translateX(-50%);
-  }
-}
-@keyframes sway {
-  0%,
-  100% {
-    transform: skewX(-12deg) translateX(0);
-  }
-  50% {
-    transform: skewX(-12deg) translateX(22px);
-  }
-}
-@keyframes rise {
-  0% {
-    transform: translateY(0) translateX(0);
-    opacity: 0;
-  }
-  8% {
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateY(-55vh) translateX(10px);
-  }
-  100% {
-    transform: translateY(-115vh) translateX(-6px);
-    opacity: 0;
-  }
-}
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 0.1;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 0.95;
-    transform: scale(1.15);
   }
 }
 @keyframes bob {
@@ -313,4 +200,28 @@
 .prose :where(blockquote p:first-of-type)::before,
 .prose :where(blockquote p:last-of-type)::after {
   content: none;
+}
+
+/* Photos inside stories: markdown images; an italic line right after an image is its caption. */
+.prose :where(img) {
+  border-radius: 1rem;
+  margin: 0;
+}
+.prose :where(p:has(> img)) {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1.75em;
+  margin-bottom: 1.75em;
+}
+.prose :where(p:has(> img + img)) {
+  grid-template-columns: 1fr 1fr;
+}
+.prose :where(p:has(> img) > em) {
+  grid-column: 1 / -1;
+  font-family: var(--font-sans);
+  font-style: normal;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--color-tan-deep);
 }

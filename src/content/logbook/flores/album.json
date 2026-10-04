@@ -1,0 +1,16 @@
+{
+  "title": "Flores",
+  "place": "Flores, Indonesia",
+  "coords": [-8.55, 121.1],
+  "date": "Summer 2025",
+  "sortDate": "2025-07-24",
+  "caption": "Where the boat ended.",
+  "photos": [
+    {
+      "kind": "image",
+      "src": "./new-friends.jpg",
+      "alt": "Roanin and three new friends on a porch in Flores, all giving thumbs up",
+      "caption": "Making friends in random places."
+    }
+  ]
+}
